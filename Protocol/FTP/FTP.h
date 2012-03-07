@@ -1,0 +1,176 @@
+#include "Includes.cpp"
+#include "defines.h"
+
+#include "ConfigMgr.cpp"
+
+#ifndef __FTP
+#define __FTP
+
+
+
+enum FTPStates
+{
+    FTP_LOGIN_USER = 0,
+    FTP_LOGIN_PASS,
+    FTP_CHANGE_WORKING_DIRECTORY,
+    FTP_PRINT_WORKING_DIRECTORY,
+    FTP_CHANGE_WORKING_DIRECTORY_TO_PARENT,
+    FTP_LIST,
+    FTP_QUIT,
+    FTP_STORAGE_STORE,
+    FTP_TRANSFER_TYPE,
+    FTP_STORAGE_RETRIEVE,
+    FTP_STORAGE_DELETE,
+    FTP_MAKE_DIR,
+    FTP_REMOVE_DIR,
+    FTP_HELP,
+    FTP_NOOP,
+    FTP_SYST,
+    FTP_SESSION_PORT,
+    FTP_SESSION_PASSIVE,
+    FTP_UNKNOWN,
+};
+
+enum TransferType
+{
+        TRANSFER_BINARY,
+        TRANSFER_ASCII
+};
+
+class IP
+{
+    public:
+        IP(): ipC(NULL) { memset(ipB, 0, 4); ByteToInAddr(ipB); }
+        IP(byte i[4]) { ByteToInAddr(i); ipC = inet_ntoa(ipI); }
+        IP(in_addr i) { ipC = inet_ntoa(i); ipI = i; InAddrToByte(i); }
+        IP(char* i): ipC(i) { inet_aton(i, &ipI); InAddrToByte(ipI); }
+
+
+        void InAddrToByte(in_addr i) { memcpy(ipB, &i.s_addr, 4); }
+        void ByteToInAddr(byte* i) { memcpy(&ipI.s_addr, i, 4); }
+
+        char* ToChar() const { return ipC; }
+
+        void Restore() { ByteToInAddr(ipB); ipC = inet_ntoa(ipI); }
+
+        operator in_addr() { return ipI; }
+        operator char*() { return ipC; }
+        byte& operator [](const int location) { return ipB[location]; }
+
+    protected:
+        byte ipB[4]; // addr
+        in_addr ipI;
+        char* ipC;
+};
+
+struct SessionSendStruct;
+struct SessionRecvStruct;
+
+struct SessionDataStruct
+{
+    SessionDataStruct(): username(""), password(""), parentDir("/"), actualDir("/"), 
+      port(20), passiveSock(0), loginPrompted(false), loggedIn(false), isPassive(false), DTPActive(false), abortTranfser(false),
+      activeSend(NULL), activeRecv(NULL) { }
+
+    string username;
+    string password;
+    string parentDir;
+    string actualDir;
+    TransferType transferType;
+
+    IP ip;
+    uint16 port;
+
+    int passiveSock;
+
+    bool loginPrompted;
+    bool loggedIn;
+    bool isPassive;
+
+    bool DTPActive;
+    bool abortTranfser;
+
+    SessionSendStruct* activeSend;
+    SessionRecvStruct* activeRecv;
+};
+
+struct SessionSendStruct
+{
+        SessionSendStruct(SessionDataStruct& sdata, Socket* sock, char* data, size_t length): 
+        s(sdata), so(sock), d(data), l(length) {  }
+
+        SessionDataStruct& s;
+        Socket* so;
+        char*   d;
+        size_t  l;
+};
+
+struct SessionRecvStruct
+{
+        SessionRecvStruct(SessionDataStruct& sdata, Socket* sock, const char* fileName): 
+        s(sdata), so(sock), f(fileName) {  }
+
+        SessionDataStruct& s;
+        Socket* so;
+        const char*   f;
+};
+
+std::map<int, int> sessionStatus;
+std::map<int, SessionDataStruct> sessionData;
+
+SimpleLog* protoLog;
+ConfigMgr* configMgr;
+
+std::map<int, const char*> responseCodeMessage;
+
+#ifdef __cplusplus
+extern "C" 
+{
+#endif
+
+class FTP
+{
+    public:
+        static void SendGreetings(Socket* sock);
+        static void SendHelloResponse(Socket* sock, std::string);
+        static void SendCommandResponse(Socket* sock, int responseCode);
+        static void SendSpecialCommandResponse(Socket* sock, int responseCode, string text);
+        static void SendOverDTP(int fd, char* data, size_t dataLength);
+        static void RecieveOverDTP(int fd, const char* fileName);
+        static void InitPassiveSock(SessionDataStruct& session);
+};
+
+#ifdef __cplusplus
+}
+#endif
+
+
+enum BoolConfigs
+{
+    CONFIG_BOOL_DEBUG,
+    CONFIG_BOOL_CONTROL,
+    MAX_BOOL_CONFIGS
+};
+
+enum StringConfigs
+{
+    CONFIG_STRING_GREETINGS,
+    MAX_CONFIG_STRING
+};
+
+enum IntConfigs
+{
+    CONFIG_INT_MAX_DATA_SEGMENT_SIZE,
+    CONFIG_INT_SEND_WAIT_TIME,
+    CONFIG_INT_SEND_ERROR_WAIT_TIME,
+    CONFIG_INT_RECV_WAIT_TIME,
+    CONFIG_INT_RECV_ERROR_WAIT_TIME,
+    MAX_CONFIG_INT
+
+};
+
+bool boolConfigs[MAX_BOOL_CONFIGS];
+string stringConfigs[MAX_CONFIG_STRING];
+int intConfigs[MAX_CONFIG_INT];
+
+#endif // __FTP

@@ -1,0 +1,14 @@
+build/
+bin/
+Server/
+*.o
+*.a
+*.so
+*.git
+*.patch
+*.diff
+*~
+*.h~
+*.cpp~
+.directory
+.mailmap
