@@ -11,7 +11,7 @@
 
 class SharedLibrary
 {
-    public: 
+    public:
         SharedLibrary(): LibName(NULL), lastErr(NULL), lib_handle(NULL), isopen(false) { }
         SharedLibrary(const char* Lib): LibName(NULL), lastErr(NULL), lib_handle(NULL), isopen(false) { open(Lib); }
         ~SharedLibrary() { close(); }
@@ -22,14 +22,14 @@ class SharedLibrary
 
         void* findFunc(const char* Func);
 
-        inline char* getError() const { return lastErr; }    
+        inline char* getError() const { return lastErr; }
         inline const char* GetLibraryPath() const { return LibName; }
 
-    protected: 
-       const char  *LibName ;
-       char  *lastErr ;
-       void  *lib_handle ;
-       bool   isopen ;
+    protected:
+       const char  *LibName;
+       char  *lastErr;
+       void  *lib_handle;
+       bool   isopen;
 
 };
 #endif

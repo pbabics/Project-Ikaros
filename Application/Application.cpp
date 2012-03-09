@@ -18,11 +18,11 @@ debug(false), control(false), daemonize(false), libLoaded(false), terminate(fals
                 refTrim(property);
                 value =  arg.substr(arg.find('=') + 1 , string::npos);
                 refTrim(value);
-            }  
+            }
             else
             {
                 property = arg.substr(arg.find_first_not_of('-'), string::npos);
-                value = string("1"); 
+                value = string("1");
             }
             RunOptions.insert(make_pair(property, value));
         }
@@ -39,7 +39,7 @@ debug(false), control(false), daemonize(false), libLoaded(false), terminate(fals
             {
                 config.getline(buff, 1024);
                 line = buff;
-                if( (line.length() > 0) && 
+                if( (line.length() > 0) &&
                     (line[0] != '#') && (line[0] != ';') &&
                     (line.find('=') != string::npos))
                 {
@@ -118,7 +118,7 @@ void Application::outDebugParams() const
     if (isDaemon())
     {
         sLog->outString("****** Runnig as Daemon ******");
-        sLog->outString("Process Id:  %d  Parent Process Id: %d  Process Group Id: %d", 
+        sLog->outString("Process Id:  %d  Parent Process Id: %d  Process Group Id: %d",
         GetProcessId(), GetParentProcessId(), GetCurrentProcessGroupId());
         sLog->outString("Working Directory %s", GetWorkingDirectory());
         sLog->outString();
@@ -169,7 +169,7 @@ void Application::LoadIntConfig(string ConfigName, uint32 Config, uint32 Default
             s.str(FileOptions[ConfigName]);
             s >> IntConfigs[Config];
         }
-        else 
+        else
             IntConfigs[Config] = Default;
     }
 }
@@ -190,7 +190,7 @@ void Application::LoadBoolConfig(string ConfigName, uint32 Config, bool Default)
             s.str(FileOptions[ConfigName]);
             s >> BoolConfigs[Config];
         }
-        else 
+        else
             BoolConfigs[Config] = Default;
     }
 }
@@ -205,7 +205,7 @@ void Application::LoadIntRunConfig(string ConfigName, string ShortFormat, uint32
             s.str(RunOptions[ConfigName]);
             s >> IntConfigs[Config];
         }
-        else 
+        else
         if (RunOptions.find(ShortFormat) != RunOptions.end())
         {
             stringstream s;
@@ -221,7 +221,7 @@ void Application::LoadStringRunConfig(string ConfigName, string ShortFormat, uin
     {
         if (RunOptions.find(ConfigName) != RunOptions.end())
             StringConfigs[Config] = RunOptions[ConfigName];
-        else 
+        else
             if (RunOptions.find(ShortFormat) != RunOptions.end())
                 StringConfigs[Config] = RunOptions[ShortFormat];
     }
@@ -237,7 +237,7 @@ void Application::LoadBoolRunConfig(string ConfigName, string ShortFormat, uint3
             s.str(RunOptions[ConfigName]);
             s >> BoolConfigs[Config];
         }
-        else 
+        else
         if (RunOptions.find(ShortFormat) != RunOptions.end())
         {
             stringstream s;
@@ -382,8 +382,8 @@ uint32 Application::Update()
     timeval selectTimeout;
     selectTimeout.tv_sec = 0;
     selectTimeout.tv_usec = 500000;
-    
-    int ProcessQueue = threadMgr->CreateThread("Queue", &CallProcessQueue, handler); 
+
+    int ProcessQueue = threadMgr->CreateThread("Queue", &CallProcessQueue, handler);
     if (ProcessQueue == -1)
     {
         sLog->outError("[Recv Thread] Executing Packet Handling Queue Failed errno: %d",errno);

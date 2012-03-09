@@ -12,10 +12,10 @@ bool SharedLibrary::open(const char* LibLink)
             delete lastErr;
         lastErr = new char[strlen(buf)];
         strcpy(lastErr, buf);
-        return isopen = false ;
+        return isopen = false;
     }
-    LibName = LibLink ;
-    return isopen = true ;
+    LibName = LibLink;
+    return isopen = true;
 }
 
 void * SharedLibrary::findFunc(const char* Func)
@@ -35,7 +35,7 @@ void * SharedLibrary::findFunc(const char* Func)
         strcpy(lastErr, buf);
         return NULL;
     }
-    return func ;
+    return func;
 }
 
 void SharedLibrary::close()

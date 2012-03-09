@@ -11,14 +11,14 @@ using std::queue;
 
 class ConnectionMgr
 {
-    public: 
+    public:
             typedef std::map<int, Socket*> SocketMap;
             typedef std::queue<SocketMap::iterator> CloseQueue;
 
 
             ConnectionMgr(): closeImmediatly(false) { sockets.clear(); }
             ~ConnectionMgr();
-            
+
             Socket* AddSocket(Socket* sock);
 
             void CloseSocketById(uint32 sock);

@@ -143,7 +143,7 @@ void PacketHandler::ProcessQueue()
             //sLog->outDebug("Process Queue Update after diff: %lu milliseconds", getMsTimeDiffToNow(workBegan));
             queue.pop();
         }
-        else 
+        else
             if (delayedQueue.size())
                 msleep(500);
     }

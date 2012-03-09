@@ -6,17 +6,17 @@ void Daemon::Daemonize(const char* lockFile, const char* workingDir)
     int i, lfp;
     char str[10];
     #pragma GCC diagnostic ignored "-Wunused-result"
-    if (GetParentProcessId() == 1) 
+    if (GetParentProcessId() == 1)
         return;
     i = fork();
     if (i < 0)
         exit(-1);
-    if (i > 0) 
+    if (i > 0)
         exit(0);
     SetCurrentProcessSessionId();
-    for (i = getdtablesize(); i >= 0; --i) 
+    for (i = getdtablesize(); i >= 0; --i)
         close(i);
-    i = open("/dev/null", O_RDWR); 
+    i = open("/dev/null", O_RDWR);
     dup(i);
     dup(i);
     umask(027);
@@ -26,7 +26,7 @@ void Daemon::Daemonize(const char* lockFile, const char* workingDir)
     if (lockFile)
     {
         lfp = open(lockFile, O_RDWR | O_CREAT, 0640);
-        if (lfp < 0) 
+        if (lfp < 0)
             exit(-1);
         if (lockf(lfp, F_TLOCK, 0) < 0)
             exit(0);

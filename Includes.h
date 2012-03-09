@@ -31,7 +31,7 @@
 #include <cstdio>   // sprintf etc
 #include <cstdarg>  // Arguments
 #include <cstdlib>  // atoi
-#include <cstring>    
+#include <cstring>
 
 #include <fcntl.h>
 

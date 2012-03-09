@@ -56,7 +56,7 @@ int SimpleLog::outControl(const char* format, ...)
         pthread_mutex_unlock(&writeMutex);
         return done;
     }
-    else 
+    else
         return 0;
 }
 
@@ -133,7 +133,7 @@ int SimpleLog::outDebug(const char* format, ...)
         pthread_mutex_unlock(&writeMutex);
         return done;
     }
-    else 
+    else
         return 0;
 }
 

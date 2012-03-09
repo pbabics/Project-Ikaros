@@ -101,7 +101,7 @@ bool _isIPv4(char* ip)
         {
             if(posc == 5)
                 return false;
-            pos[posc] = i; 
+            pos[posc] = i;
 
             if (abs(pos[posc - 1] - pos[posc]) - 1 > 3)
                 return false;
@@ -143,7 +143,7 @@ int TCPSocket::Connect(char* Ip)
     *((char*) strrchr(ip, ':')) = '\0';
     if (_isIPv4(ip))
         return Connect(ip, port);
-    else 
+    else
         return DNSConnect(ip, port);
 }
 
@@ -202,7 +202,7 @@ int TCPSocket::DNSConnect(char *DomainName, char *Port)
     dest.sin_family = AF_INET;
     dest.sin_port = htons(atoi(Port));
     dest.sin_addr.s_addr= *((unsigned long *) host->h_addr_list[0]);
-    
+
     int ret = connect(sock, (struct sockaddr*)&dest, sizeof(dest));
     isConnected = (ret == 0);
     return ret;

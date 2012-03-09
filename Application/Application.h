@@ -12,7 +12,7 @@
 #include "Daemon.h"
 
 #ifndef __App
-#define __App 
+#define __App
 
 using Files::AsciiFile ;
 
@@ -99,7 +99,7 @@ class Application : public Daemon
 
             pthread_mutex_t* GetLogWriteMutex() { return &logMutex; }
 
-    protected: 
+    protected:
             Options FileOptions;
             Options RunOptions;
             bool debug;
@@ -116,10 +116,10 @@ class Application : public Daemon
             string ApplicationAddress;
             pthread_mutex_t logMutex;
 
-    private: 
+    private:
             void ParseParams();
             void _initGlobals();
-            void _uninitGlobals();    
+            void _uninitGlobals();
             void _InitServerSocket();
             void LoadConfigs();
 
@@ -134,4 +134,4 @@ class Application : public Daemon
             void outDebugParams() const;
             void outDebugLibrary() const;
 };
-#endif 
+#endif

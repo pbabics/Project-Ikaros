@@ -191,7 +191,7 @@ void ThreadMgr::AddMutex(std::string MutexName, pthread_mutex_t mutex)
 {
     if (pMutexes.find(MutexName) != pMutexes.end())
         return;
-    
+
     pMutexes.insert(std::pair<string, pthread_mutex_t&>(MutexName, mutex));
 }
 

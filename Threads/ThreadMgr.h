@@ -58,7 +58,7 @@ struct Thread
 
 class ThreadMgr
 {
-    public: 
+    public:
         ThreadMgr(){ pThreads.clear(); }
         ~ThreadMgr(){ pThreads.clear(); }
 

@@ -15,11 +15,11 @@ ConfigMgr::ConfigMgr(const char* conf, char* argv[], int argc)
                 refTrim(property);
                 value =  arg.substr(arg.find('=') + 1 , string::npos);
                 refTrim(value);
-            }  
+            }
             else
             {
                 property = arg.substr(arg.find_first_not_of('-'), string::npos);
-                value = string("1"); 
+                value = string("1");
             }
             RunOptions.insert(make_pair(property, value));
         }
@@ -35,7 +35,7 @@ ConfigMgr::ConfigMgr(const char* conf, char* argv[], int argc)
             {
                 config.getline(buff, 1024);
                 line = buff;
-                if( (line.length() > 0) && 
+                if( (line.length() > 0) &&
                     (line[0] != '#') && (line[0] != ';') &&
                     (line.find('=') != string::npos))
                 {
@@ -72,7 +72,7 @@ string ConfigMgr::LoadStringConfig(string ConfigName, string Default)
 {
     if (FileOptions.size() > 0)
         if (FileOptions.find(ConfigName) != FileOptions.end())
-            return FileOptions[ConfigName]; 
+            return FileOptions[ConfigName];
 
     return Default;
 }
@@ -105,7 +105,7 @@ int ConfigMgr::LoadIntRunConfig(string ConfigName, string ShortFormat, int Defau
             s >> value;
             return value;
         }
-        else 
+        else
             if (RunOptions.find(ShortFormat) != RunOptions.end())
             {
                 stringstream s;
@@ -142,7 +142,7 @@ bool ConfigMgr::LoadBoolRunConfig(string ConfigName, string ShortFormat, bool De
             s >> value;
             return value;
         }
-        else 
+        else
         if (RunOptions.find(ShortFormat) != RunOptions.end())
         {
             stringstream s;

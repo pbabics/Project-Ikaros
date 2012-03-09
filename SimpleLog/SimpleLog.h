@@ -15,7 +15,7 @@ using std::cout ;
 
 class SimpleLog
 {
-    public:  
+    public:
          SimpleLog(bool &C, bool &D, const char* logfile = NULL);
          ~SimpleLog();
          int outString(const char* format = "", ...);
@@ -23,7 +23,7 @@ class SimpleLog
          int outDebug(const char* format = "", ...);
          int outError(const char* format = "", ...);
 
-    private: 
+    private:
         const char* logf ;
         char* mdate;
         time_t d ;

@@ -12,7 +12,7 @@
 
 #include <cmath>
 #include <cstdio>
-#include <cstdlib> // for atoi() 
+#include <cstdlib> // for atoi()
 #include <errno.h>  // For errno
 
 #include "file.h"
@@ -22,7 +22,7 @@
 
 class Socket
 {
-    public: 
+    public:
             Socket(int sock, sockaddr_in addr): socket(sock), address(addr) { isConnected = true; }
             Socket(int sock): socket(sock) { isConnected = true; }
             ~Socket();
@@ -57,7 +57,11 @@ class TCPSocket
     public:
         int sock ;
 
-    public: 
+    public:
+        TCPSocket();
+        TCPSocket(int socket): sock(socket) { }
+        ~TCPSocket();
+
         int Send(const char* buff, unsigned short length, unsigned char flags);
         int Recv(char* buff, unsigned short length, unsigned char flags);
 
@@ -71,15 +75,13 @@ class TCPSocket
 
         int setSockOpt(int level, int option_name, const void *option_value, socklen_t option_len)
         {
-            return setsockopt(sock,level,option_name,option_value,option_len);
+            return setsockopt(sock, level, option_name, option_value, option_len);
         }
-        bool Connected() const { return isConnected; }
 
         void Close() { close(sock); }
-        void Disconnect() {  Close(); }
-        TCPSocket();
-        TCPSocket(int socket): sock(socket) { }
-        ~TCPSocket();
+        void Disconnect() { Close(); }
+
+        bool Connected() const { return isConnected; }
 
     private:
         struct sockaddr_in dest;

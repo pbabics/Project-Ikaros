@@ -10,12 +10,12 @@ void BinnaryData::reserve(size_t len)
         return;
     if (maxLength > len)
     {
-        memset(data + len, 0, maxLength -len); 
+        memset(data + len, 0, maxLength -len);
         return;
     }
     if (maxLength < len)
     {
-        byte *buffer = new byte[len]; 
+        byte *buffer = new byte[len];
         memset(buffer, 0, len);
         if (usedLength)
         {
@@ -49,22 +49,30 @@ void BinnaryData::clear()
 void BinnaryData::seekg(size_t to = 0, IOposition pos = beg)
 {
     switch (pos)
-        {
-            case beg: pget = data + (to > maxLength ? usedLength : to);break;
-            case end: pget = data + (to > usedLength ? usedLength : usedLength - to);break;    
-        }
+    {
+        case beg:
+            pget = data + (to > maxLength ? usedLength : to);
+            break;
+        case end:
+            pget = data + (to > usedLength ? usedLength : usedLength - to);
+            break;
+    }
 }
 void BinnaryData::seekg(IOposition pos)
 {
     switch (pos)
-        {
-            case beg: pget = data ;break;
-            case end: pget = data + usedLength ;break;    
-        }
+    {
+        case beg:
+            pget = data;
+            break;
+        case end:
+            pget = data + usedLength;
+            break;
+    }
 }
 void BinnaryData::seekg(int by)
 {
-    pget =  ((pget-data)-by > 0 ? pget-by : data+usedLength+((pget-data)-by));
+    pget = (pget-data) - by > 0 ? pget-by : data + usedLength + ((pget - data) - by);
 }
 
 
@@ -72,12 +80,12 @@ void BinnaryData::seekp(size_t to = 0, IOposition pos = beg)
 {
     switch (pos)
     {
-        case beg: 
+        case beg:
             pput = data + ( to > maxLength ? usedLength : to);
             break;
-        case end: 
+        case end:
             pput = data + (to > usedLength ? usedLength : usedLength - to);
-            break;    
+            break;
     }
 }
 
@@ -85,24 +93,24 @@ void BinnaryData::seekp(IOposition pos)
 {
     switch (pos)
     {
-        case beg: 
+        case beg:
             pput = data;
             break;
         case end:
             pput = data + usedLength;
-        break;    
+            break;
     }
 }
 
 void BinnaryData::seekp(int by)
 {
-    pput =  ((pput-data)-by > 0 ? pput-by : data+usedLength+((pput-data)-by));
+    pput =  (pput - data) - by > 0 ? pput - by : data + usedLength + ((pput - data) - by);
 }
 
 template <class T>
 void BinnaryData::skip()
 {
-    pget =  ((pget-data)-sizeof(T) > 0 ? pget-sizeof(T) : data+usedLength+((pget-data)-sizeof(T)));
+    pget =  ((pget - data) - sizeof(T) > 0) ? pget - sizeof(T) : data + usedLength + ((pget - data) - sizeof(T));
 }
 
 template <class T>
@@ -132,7 +140,7 @@ size_t BinnaryData::read(void *dest, size_t num= maxpos) const
     if (usedLength == 0 || !dest)
         return 0 ;
     memcpy(dest, data, (usedLength > num ? num : usedLength));
-    return (usedLength>num?num:usedLength);
+    return (usedLength > num ? num : usedLength);
 }
 
 size_t BinnaryData::readsome(void *dest, size_t num = maxpos)
@@ -178,7 +186,7 @@ void BinnaryData::append(const void *src, size_t num)
 byte BinnaryData::operator [](size_t pos)const
 {
     if (pos > maxLength)
-        pos = maxLength; 
+        pos = maxLength;
     return byte(*(data + pos));
 }
 
@@ -350,9 +358,9 @@ string BinnaryData::getline()
     size_t pos = _find('\n');
     if (*(pget + pos) == '\r')
         pos--;
-    char stream[pos+1];
-    memset(stream, 0, pos+1);
-    readsome(stream ,pos);
+    char stream[pos + 1];
+    memset(stream, 0, pos + 1);
+    readsome(stream, pos);
     if (*pget == '\r')
         pget++;
     if (*pget == '\n')
@@ -366,34 +374,34 @@ string BinnaryData::getline()
 
 size_t BinnaryData::find(byte ch)
 {
-    for (size_t i = 0;i<usedLength;i++)
-        if (*(data+i) == ch)
-            return i ;
-    return maxpos ;
+    for (size_t i = 0; i < usedLength; i++)
+        if (*(data + i) == ch)
+            return i;
+    return maxpos;
 }
 
 size_t BinnaryData::find(byte* ch, size_t length)
 {
-    for (size_t i = 0;i<usedLength-length;i++)
-        if (memcmp(data+i,ch,length))
-            return i ;
-    return maxpos ;
+    for (size_t i = 0; i < usedLength - length; i++)
+        if (memcmp(data + i, ch, length))
+            return i;
+    return maxpos;
 }
 
 size_t BinnaryData::_find(byte ch)
 {
-    for (size_t i = 0; i < usedLength - (pget-data); i++)
-        if (*(pget+i) == ch)
-            return i ;
-    return maxpos ;
+    for (size_t i = 0; i < usedLength - (pget - data); i++)
+        if (*(pget + i) == ch)
+            return i;
+    return maxpos;
 }
 
 size_t BinnaryData::locate(byte ch)
 {
-    for (size_t i = pget-data;i<usedLength;i++)
-        if (*(pget+i) == ch)
-            return i ;
-    return maxpos-(pget-data) ;
+    for (size_t i = pget - data; i < usedLength; i++)
+        if (*(pget + i) == ch)
+            return i;
+    return maxpos - (pget - data);
 }
 
 /*                                       */
@@ -410,17 +418,17 @@ string BinnaryData::HexLike()
     stringstream n;
     char x[3];
     for (size_t i = 0; i < size(); i++)
+    {
+        memset(x, 0, 3);
+        sprintf(x, "%02x", *(data + i));
+        n << x;
+        if (i < size() - 1)
         {
-            memset(x, 0, 3);
-            sprintf(x, "%02x",*(data + i));
-            n << x;
-            if (i < size()-1)
-                {
-                    if ((i % 8 == 0) && i > 0)
-                        n << '\n';
-                        else
-                        n << ' ';
-                }
+            if ((i % 8 == 0) && i > 0)
+                n << '\n';
+            else
+                n << ' ';
         }
+    }
     return n.str();
 }
