@@ -18,21 +18,21 @@ using Files::AsciiFile ;
 
 
 typedef void (*onConnect)(in_addr, int);
-typedef	void (*onRecieve)(in_addr, int, char*);
-typedef	void (*onSend)(char*);
-typedef	void (*onDisconnect)(in_addr, int);
-typedef	void (*onLoad)();
-typedef	void (*onUnload)();
-typedef	void (*tFunc)(void*);
+typedef    void (*onRecieve)(in_addr, int, char*);
+typedef    void (*onSend)(char*);
+typedef    void (*onDisconnect)(in_addr, int);
+typedef    void (*onLoad)();
+typedef    void (*onUnload)();
+typedef    void (*tFunc)(void*);
 
 typedef std::map<string, string, StringComparsionObject> Options;
 
 struct Protocol
 {
-	onConnect 	OnConnect;
-	onRecieve 	OnRecieve;
-	onSend 		OnSend;
-	onDisconnect   	OnDisconnect;
+    onConnect     OnConnect;
+    onRecieve     OnRecieve;
+    onSend         OnSend;
+    onDisconnect       OnDisconnect;
     onLoad      OnLoad;
     onUnload    OnUnload;
 };
@@ -84,15 +84,15 @@ class Application : public Daemon
 
             uint32 Update();
 
-	        SignalHandler *sigHandler;
-	        SharedLibrary *libLoader;
+            SignalHandler *sigHandler;
+            SharedLibrary *libLoader;
             ConnectionMgr *socketMgr;
             ThreadMgr *threadMgr;
             PacketHandler *handler;
 
-	        bool LoadLibrary();
+            bool LoadLibrary();
 
-	        Protocol proto;
+            Protocol proto;
 
             inline bool Exiting() const { return terminate; }
             void Terminate();
@@ -104,8 +104,8 @@ class Application : public Daemon
             Options RunOptions;
             bool debug;
             bool control;
-	        bool daemonize;
-	        bool libLoaded;
+            bool daemonize;
+            bool libLoaded;
             bool terminate;
             int ServerSocket;
 
@@ -117,9 +117,9 @@ class Application : public Daemon
             pthread_mutex_t logMutex;
 
     private: 
-	        void ParseParams();
-	        void _initGlobals();
-	        void _uninitGlobals();	
+            void ParseParams();
+            void _initGlobals();
+            void _uninitGlobals();    
             void _InitServerSocket();
             void LoadConfigs();
 
