@@ -285,7 +285,7 @@ void processRecieve(in_addr /* address */, int fd, char* data)
                 FTP::SendCommandResponse(sock, 530);
                 return;
             }
-            protoLog->outDebug("Listing Directory:   %s",string('.'+session.actualDir).c_str());
+            protoLog->outDebug("Listing Directory:   %s", string('.' + session.actualDir).c_str());
             TerminalFuction func("ls", "-la ." + session.actualDir);
             char* output = func.RunWithCallback();
             FTP::SendOverDTP(fd, output, strlen(output));
@@ -298,8 +298,7 @@ void processRecieve(in_addr /* address */, int fd, char* data)
                 FTP::SendCommandResponse(sock, 530);
                 return;
             }
-            string dir;
-            dat >> dir;
+            string dir = trim(dat.str().substr(dat.str().find_first_of(' '), string::npos));
             if (dir.compare(".") == 0)
             {
                 FTP::SendSpecialCommandResponse(sock, 200, "'"+ session.actualDir +"' is actual directory.");
