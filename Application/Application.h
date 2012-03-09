@@ -18,12 +18,12 @@ using Files::AsciiFile ;
 
 
 typedef void (*onConnect)(in_addr, int);
-typedef    void (*onRecieve)(in_addr, int, char*);
-typedef    void (*onSend)(char*);
-typedef    void (*onDisconnect)(in_addr, int);
-typedef    void (*onLoad)();
-typedef    void (*onUnload)();
-typedef    void (*tFunc)(void*);
+typedef void (*onRecieve)(in_addr, int, char*);
+typedef void (*onSend)(char*);
+typedef void (*onDisconnect)(in_addr, int);
+typedef void (*onLoad)();
+typedef void (*onUnload)();
+typedef void (*tFunc)(void*);
 
 typedef std::map<string, string, StringComparsionObject> Options;
 

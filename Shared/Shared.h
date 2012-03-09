@@ -11,25 +11,25 @@
 
 class SharedLibrary
 {
-	public: 
+    public: 
         SharedLibrary(): LibName(NULL), lastErr(NULL), lib_handle(NULL), isopen(false) { }
-		SharedLibrary(const char* Lib): LibName(NULL), lastErr(NULL), lib_handle(NULL), isopen(false) { open(Lib); }
-		~SharedLibrary() { close(); }
+        SharedLibrary(const char* Lib): LibName(NULL), lastErr(NULL), lib_handle(NULL), isopen(false) { open(Lib); }
+        ~SharedLibrary() { close(); }
 
-		bool open(const char* LibLink);
-		inline bool is_open() const { return isopen; }
-		void close();
+        bool open(const char* LibLink);
+        inline bool is_open() const { return isopen; }
+        void close();
 
-		void* findFunc(const char* Func);
+        void* findFunc(const char* Func);
 
-		inline char* getError() const { return lastErr; }	
-	    inline const char* GetLibraryPath() const { return LibName; }
+        inline char* getError() const { return lastErr; }    
+        inline const char* GetLibraryPath() const { return LibName; }
 
     protected: 
-	   const char  *LibName ;
-	   char  *lastErr ;
-	   void  *lib_handle ;
-	   bool   isopen ;
+       const char  *LibName ;
+       char  *lastErr ;
+       void  *lib_handle ;
+       bool   isopen ;
 
 };
 #endif

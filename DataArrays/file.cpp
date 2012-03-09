@@ -34,7 +34,7 @@ size_t AsciiFile::getLength()
         return 0;  
     seekg(0,ios_base::end);
     long len = tellg();
-    seekg(0,ios_base::beg);	   
+    seekg(0,ios_base::beg);       
     return len ;
 }
 
@@ -42,17 +42,17 @@ void AsciiFile::SaveToFile()
 {
     if (!is_open())
         return;
-	seekp(ios_base::beg);
-	write(content.c_str(),content.length());
+    seekp(ios_base::beg);
+    write(content.c_str(),content.length());
 }
 
 void BinFile::_openFile(const char* fileName)
 {
     if ((FileName.compare(fileName) != 0) && (strlen(fileName)> 0 ))
     {
-	    open(fileName);
-	    FileName = string(fileName); 
-	}
+        open(fileName);
+        FileName = string(fileName); 
+    }
     if (!is_open())
         open(FileName.c_str());
 }
@@ -77,7 +77,7 @@ size_t BinFile::getLength()
         return 0;  
     seekg(0,ios_base::end);
     long len = tellg();
-    seekg(0,ios_base::beg);	   
+    seekg(0,ios_base::beg);       
     return len ;
 }
 
@@ -85,8 +85,8 @@ void BinFile::SaveToFile()
 {
     if (!is_open())
         return;
-	seekp(ios_base::beg);
-	write(content, content);
+    seekp(ios_base::beg);
+    write(content, content);
 }
 
 void BinFile::SaveToFile(const char* file)
@@ -95,8 +95,8 @@ void BinFile::SaveToFile(const char* file)
     printf("\nBinFile::SaveToFile file:  %s  is open:  %s\n\n", file, is_open()? "true": "false");
     if (!is_open())
         return;
-	seekp(ios_base::beg);
-	write(content, content);
+    seekp(ios_base::beg);
+    write(content, content);
 }
 
 }

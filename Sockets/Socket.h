@@ -62,21 +62,21 @@ class TCPSocket
         int Recv(char* buff, unsigned short length, unsigned char flags);
 
         int DNSConnect(char* DomainName, char* Port);
-	    int DNSConnect(char* DomainName, unsigned short Port);
+        int DNSConnect(char* DomainName, unsigned short Port);
 
         int Connect(char* IPAdress, char* Port);
-	    int Connect(char* Ip, unsigned short Port);
+        int Connect(char* Ip, unsigned short Port);
         int Connect(unsigned int IPAdress, unsigned short Port);
-	    int Connect(char* Ip);
+        int Connect(char* Ip);
 
-	    int setSockOpt(int level, int option_name, const void *option_value, socklen_t option_len)
+        int setSockOpt(int level, int option_name, const void *option_value, socklen_t option_len)
         {
             return setsockopt(sock,level,option_name,option_value,option_len);
         }
         bool Connected() const { return isConnected; }
 
-	    void Close() { close(sock); }
-	    void Disconnect() {  Close(); }
+        void Close() { close(sock); }
+        void Disconnect() {  Close(); }
         TCPSocket();
         TCPSocket(int socket): sock(socket) { }
         ~TCPSocket();

@@ -202,7 +202,7 @@ int TCPSocket::DNSConnect(char *DomainName, char *Port)
     dest.sin_family = AF_INET;
     dest.sin_port = htons(atoi(Port));
     dest.sin_addr.s_addr= *((unsigned long *) host->h_addr_list[0]);
-	
+    
     int ret = connect(sock, (struct sockaddr*)&dest, sizeof(dest));
     isConnected = (ret == 0);
     return ret;
