@@ -118,8 +118,8 @@ void Application::outDebugParams() const
     if (isDaemon())
     {
         sLog->outString("****** Runnig as Daemon ******");
-        sLog->outString("Process Id:  %d  Parent Process Id: %d  Process Group Id: %d", GetProcessId(), getppid(), getsid(getpid()));
-
+        sLog->outString("Process Id:  %d  Parent Process Id: %d  Process Group Id: %d", 
+        GetProcessId(), GetParentProcessId(), GetCurrentProcessGroupId());
         sLog->outString("Working Directory %s", GetWorkingDirectory());
         sLog->outString();
     }

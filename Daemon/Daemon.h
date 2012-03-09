@@ -37,7 +37,7 @@ class Process
             memset(wdir, 0, MAX_BUFFER_SIZE);
             return getcwd(wdir, MAX_BUFFER_SIZE);
         }
-        int SetWorkingDirectory(char* directory)
+        int SetWorkingDirectory(const char* directory)
         {
             return chdir(directory);
         }
