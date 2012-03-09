@@ -9,6 +9,7 @@
 #include "file.h"
 #include "Handler.h"
 #include "ConfigMgr.h"
+#include "Daemon.h"
 
 #ifndef __App
 #define __App 
@@ -43,6 +44,8 @@ enum IntOptions
 
 enum StringOptions
 {
+    CONFIG_STRING_PID_FILE,
+    CONFIG_STRING_WORKING_DIRECTORY,
     CONFIG_STRING_BIND_IP,
     CONFIG_STRING_PROTOCOL_NAME,
     CONFIG_STRING_LIBRARY_PATH,
@@ -68,10 +71,10 @@ class ConnectionMgr;
 
 extern SimpleLog* sLog;
 
-class Application
+class Application : public Daemon
 {
     public:
-            Application(int,char**,const char* conf);
+            Application(int, char**, const char* conf);
             ~Application() { FileOptions.clear(); RunOptions.clear(); sLog->outControl("Terminating Application"); _uninitGlobals(); }
             bool inDebug() const { return debug; }
             bool inControl() const { return control; }
@@ -102,6 +105,9 @@ class Application
 
             inline bool Exiting() const { return terminate; }
             void Terminate();
+
+            pthread_mutex_t* GetLogWriteMutex() { return &logMutex; }
+
     protected: 
             Options FileOptions;
             Options RunOptions;
@@ -115,6 +121,9 @@ class Application
             bool BoolConfigs[CONFIG_BOOL_MAX];
             int IntConfigs[CONFIG_INT_MAX];
             string StringConfigs[CONFIG_STRING_MAX];
+
+            string ApplicationAddress;
+            pthread_mutex_t logMutex;
 
     private: 
 	        void ParseParams();

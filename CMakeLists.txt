@@ -24,6 +24,7 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/Threads/
     ${PROJECT_SOURCE_DIR}/Sockets/
     ${PROJECT_SOURCE_DIR}/Utilities/
+    ${PROJECT_SOURCE_DIR}/Daemon/
 )
 
 set(CMAKE_CXX_FLAGS "-W -Wall -O2 -ldl -rdynamic -pthread -g")
@@ -45,6 +46,7 @@ set (STAT_CORE
     ConfigMgr/ConfigMgr.cpp
     Handling/Handler.cpp
     Application/Application.cpp
+    Daemon/Daemon.cpp
 )
 
 set (STAT_MAIN main.cpp)

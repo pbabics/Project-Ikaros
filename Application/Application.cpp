@@ -4,10 +4,10 @@
 Application::Application(int argc, char* argv[], const char *conf):
 debug(false), control(false), daemonize(false), libLoaded(false), terminate(false)
 {
-    _initGlobals();
-
-    if (argc> 0)
-        for (int i = 1 ; i < argc ; i++)
+    if (argc > 0)
+    {
+        ApplicationAddress = argv[0];
+        for (int i = 1 ; i < argc; i++)
         {
             string arg = string(argv[i]);
             string property, value;
@@ -26,6 +26,7 @@ debug(false), control(false), daemonize(false), libLoaded(false), terminate(fals
             }
             RunOptions.insert(make_pair(property, value));
         }
+    }
 
     if (conf)
     {
@@ -54,6 +55,11 @@ debug(false), control(false), daemonize(false), libLoaded(false), terminate(fals
         }
     }
     ParseParams();
+
+    if (BoolConfigs[CONFIG_BOOL_DAEMONIZE])
+        Daemonize(StringConfigs[CONFIG_STRING_PID_FILE].c_str(), StringConfigs[CONFIG_STRING_WORKING_DIRECTORY].c_str());
+
+    _initGlobals();
 }
 
 void Application::ParseParams()
@@ -82,6 +88,8 @@ void Application::LoadConfigs()
     if (FileOptions.size() > 0)
     {
         LoadBoolConfig("Server.Daemonize", CONFIG_BOOL_DAEMONIZE, false);
+        LoadStringConfig("Server.PidFile", CONFIG_STRING_PID_FILE, "/var/lock/ikaros.pid");
+        LoadStringConfig("Server.WorkingDirectory", CONFIG_STRING_WORKING_DIRECTORY, ApplicationAddress.substr(0, ApplicationAddress.find_last_of('/')));
         LoadBoolConfig("Server.Log", CONFIG_BOOL_LOG, true);
         LoadIntConfig("Server.LogLevel", CONFIG_INT_LOG_LEVEL, 0);
 
@@ -106,7 +114,19 @@ void Application::LoadConfigs()
 
 void Application::outDebugParams() const
 {
+    if (isDaemon())
+    {
+        sLog->outString("****** Runnig as Daemon ******");
+        sLog->outString("Process Id:  %d  Parent Process Id: %d  Process Group Id: %d", getpid(), getppid(), getsid(getpid()));
+        char wdir[255];
+        memset(wdir, 0, 255);
+        getcwd(wdir, 255);
+        sLog->outString("Working Directory %s", wdir);
+        sLog->outString();
+    }
     sLog->outString("CONFIG_BOOL_DAEMONIZE=%s", toString(BoolConfigs[CONFIG_BOOL_DAEMONIZE]));
+    sLog->outString("CONFIG_STRING_PID_FILE='%s'", StringConfigs[CONFIG_STRING_PID_FILE].c_str());
+    sLog->outString("CONFIG_STRING_WORKING_DIRECTORY='%s'", StringConfigs[CONFIG_STRING_WORKING_DIRECTORY].c_str());
     sLog->outString("CONFIG_BOOL_LOG=%s", toString(BoolConfigs[CONFIG_BOOL_LOG]));
     sLog->outString("CONFIG_INT_LOG_LEVEL=%d", IntConfigs[CONFIG_INT_LOG_LEVEL]);
     sLog->outString("Control=%s", toString(control));

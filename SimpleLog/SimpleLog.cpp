@@ -5,10 +5,10 @@ SimpleLog::SimpleLog(bool &C, bool &D, const char* logfile):
 logf(NULL), mdate(NULL), Debug(D), Control(C)
 {
     if (logfile)
-        {
-            logf = logfile;
-            fclose(fopen(logf, "w"));
-        }
+    {
+        logf = logfile;
+        fclose(fopen(logf, "w"));
+    }
     mdate= new char[256];
     pthread_mutex_init(&writeMutex, NULL);
 }
