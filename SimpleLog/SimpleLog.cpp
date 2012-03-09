@@ -48,9 +48,10 @@ int SimpleLog::outControl(const char* format, ...)
                 vfprintf(log, format, arg);
                 va_end(arg);
             }
+            fprintf(log, "\n");
             fclose(log);
         }
-        std::cout << std::endl ;
+        std::cout << std::endl;
         std::cout.flush();
         pthread_mutex_unlock(&writeMutex);
         return done;
@@ -82,14 +83,14 @@ int SimpleLog::outString(const char* format, ...)
         if (strlen(format))
         {
             va_start(arg, format);
-            fprintf(log,"%s \t", mdate);
+            fprintf(log, "%s \t", mdate);
             vfprintf(log, format, arg);
             va_end(arg);
         }
         fprintf(log, "\n");
         fclose(log);
     }
-    std::cout << std::endl ;
+    std::cout << std::endl;
     std::cout.flush();
     pthread_mutex_unlock(&writeMutex);
     return done;
@@ -114,20 +115,20 @@ int SimpleLog::outDebug(const char* format, ...)
         }
         if (logf)
         {
-            FILE* log = fopen(logf,"a");
+            FILE* log = fopen(logf, "a");
             assert(log);
             if (strlen(format))
             {
                 va_start(arg, format);
-                fprintf(log,"%s \t",mdate);
+                fprintf(log, "%s \t", mdate);
                 vfprintf(log, format, arg);
                 va_end(arg);
             }
-            fprintf(log,"\n");
+            fprintf(log, "\n");
             fclose(log);
         }
-        va_end (arg);
-        std::cout << std::endl ;
+        va_end(arg);
+        std::cout << std::endl;
         std::cout.flush();
         pthread_mutex_unlock(&writeMutex);
         return done;
@@ -163,10 +164,10 @@ int SimpleLog::outError(const char* format, ...)
             vfprintf(log, format, arg);
             va_end(arg);
         }
-        fprintf(log,"\n");
+        fprintf(log, "\n");
         fclose(log);
     }
-    std::cout << std::endl ;
+    std::cout << std::endl;
     std::cout.flush();
     pthread_mutex_unlock(&writeMutex);
     return done;

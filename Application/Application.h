@@ -22,6 +22,7 @@ typedef	void (*onRecieve)(in_addr, int, char*);
 typedef	void (*onSend)(char*);
 typedef	void (*onDisconnect)(in_addr, int);
 typedef	void (*onLoad)();
+typedef	void (*onUnload)();
 typedef	void (*tFunc)(void*);
 
 typedef std::map<string, string, StringComparsionObject> Options;
@@ -33,6 +34,7 @@ struct Protocol
 	onSend 		OnSend;
 	onDisconnect   	OnDisconnect;
     onLoad      OnLoad;
+    onUnload    OnUnload;
 };
 
 enum IntOptions
@@ -54,6 +56,7 @@ enum StringOptions
     CONFIG_STRING_CONNECT_FUNC,
     CONFIG_STRING_DISCONNECT_FUNC,
     CONFIG_STRING_LOAD_FUNC,
+    CONFIG_STRING_UNLOAD_FUNC,
     CONFIG_STRING_MAX
 };
 
@@ -88,19 +91,7 @@ class Application : public Daemon
             PacketHandler *handler;
 
 	        bool LoadLibrary();
-	
-	        struct ProtocolConfig
-            {
-		        const char *ProtocolName;
-		        uint16 	    BindPort;
-                const char *BindIP;
-		        const char *LibraryPath;
-		        const char *InitFuncName;
-		        const char *RecvFuncName;
-		        const char *SendFuncName;
-		        const char *ConnectFuncName;
-		        const char *DisconnectFuncName;
-	        } config;
+
 	        Protocol proto;
 
             inline bool Exiting() const { return terminate; }

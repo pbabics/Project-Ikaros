@@ -102,6 +102,7 @@ void Application::LoadConfigs()
         LoadStringConfig("Protocol.ConnectFunc", CONFIG_STRING_CONNECT_FUNC);
         LoadStringConfig("Protocol.DisconnectFunc", CONFIG_STRING_DISCONNECT_FUNC);
         LoadStringConfig("Protocol.LoadFunc", CONFIG_STRING_LOAD_FUNC);
+        LoadStringConfig("Protocol.UnloadFunc", CONFIG_STRING_UNLOAD_FUNC);
     }
 
     if (RunOptions.size() > 0)
@@ -117,13 +118,12 @@ void Application::outDebugParams() const
     if (isDaemon())
     {
         sLog->outString("****** Runnig as Daemon ******");
-        sLog->outString("Process Id:  %d  Parent Process Id: %d  Process Group Id: %d", getpid(), getppid(), getsid(getpid()));
-        char wdir[255];
-        memset(wdir, 0, 255);
-        getcwd(wdir, 255);
-        sLog->outString("Working Directory %s", wdir);
+        sLog->outString("Process Id:  %d  Parent Process Id: %d  Process Group Id: %d", GetProcessId(), getppid(), getsid(getpid()));
+
+        sLog->outString("Working Directory %s", GetWorkingDirectory());
         sLog->outString();
     }
+
     sLog->outString("CONFIG_BOOL_DAEMONIZE=%s", toString(BoolConfigs[CONFIG_BOOL_DAEMONIZE]));
     sLog->outString("CONFIG_STRING_PID_FILE='%s'", StringConfigs[CONFIG_STRING_PID_FILE].c_str());
     sLog->outString("CONFIG_STRING_WORKING_DIRECTORY='%s'", StringConfigs[CONFIG_STRING_WORKING_DIRECTORY].c_str());
@@ -141,6 +141,7 @@ void Application::outDebugParams() const
     sLog->outString("CONFIG_STRING_CONNECT_FUNC='%s'", StringConfigs[CONFIG_STRING_CONNECT_FUNC].c_str());
     sLog->outString("CONFIG_STRING_DISCONNECT_FUNC='%s'", StringConfigs[CONFIG_STRING_DISCONNECT_FUNC].c_str());
     sLog->outString("CONFIG_STRING_LOAD_FUNC='%s'", StringConfigs[CONFIG_STRING_LOAD_FUNC].c_str());
+    sLog->outString("CONFIG_STRING_UNLOAD_FUNC='%s'", StringConfigs[CONFIG_STRING_UNLOAD_FUNC].c_str());
 }
 
 void Application::outDebugLibrary() const
@@ -154,6 +155,7 @@ void Application::outDebugLibrary() const
     sLog->outString("Connect Function at Address: 0x%08x", proto.OnConnect);
     sLog->outString("Disconnect Function at Address: 0x%08x", proto.OnDisconnect);
     sLog->outString("Load Function at Address: 0x%08x", proto.OnLoad);
+    sLog->outString("Unload Function at Address: 0x%08x", proto.OnUnload);
     sLog->outString();
 }
 
@@ -268,6 +270,9 @@ bool Application::LoadLibrary()
     if (StringConfigs[CONFIG_STRING_LOAD_FUNC].length())
         proto.OnLoad = onLoad(libLoader->findFunc(StringConfigs[CONFIG_STRING_LOAD_FUNC].c_str()));
 
+    if (StringConfigs[CONFIG_STRING_UNLOAD_FUNC].length())
+        proto.OnUnload = onUnload(libLoader->findFunc(StringConfigs[CONFIG_STRING_UNLOAD_FUNC].c_str()));
+
     return libLoaded = true;
 }
 
@@ -366,6 +371,7 @@ uint32 Application::Update()
     _InitServerSocket();
 
     sigHandler->setSignalHandler(Interupt, &HandleInterupt);
+    sigHandler->setSignalHandler(SignalType(SIGTERM), &HandleInterupt);
 
     fd_set Recv, test;
     int nfds = ServerSocket+1 ,r =0;
@@ -468,6 +474,10 @@ uint32 Application::Update()
         socketMgr->CloseAllPendingSockets();
     }
 
+    if (proto.OnUnload) // Enable Library to Init its variables
+        proto.OnUnload();
+
+    libLoader->close();
     socketMgr->CloseAllSockets();
     close(ServerSocket);
     threadMgr->JoinThead(ProcessQueue, NULL);
