@@ -270,6 +270,7 @@ void* RecvData(void* args)
         FTP::SendCommandResponse(sock, 426);
 
     protoLog->outDebug("RecvData Recieved:  %lu Bytes Recieved data Size:  %lu", recieved, recvData->size());
+    protoLog->outDebug("RecvData saving into file:  %s", fileName);
     Files::BinFile file;
     file.open(fileName, ios_base::trunc | ios_base::binary | ios_base::out);
     file.write((const char*)recvData, recvData->size());
