@@ -286,7 +286,7 @@ void processRecieve(in_addr /* address */, int fd, char* data)
                 return;
             }
             protoLog->outDebug("Listing Directory:   %s", string('.' + session.actualDir).c_str());
-            TerminalFuction func("ls", "-la ." + session.actualDir);
+            TerminalFuction func("ls", "-la \"." + session.actualDir + '"');
             char* output = func.RunWithCallback();
             FTP::SendOverDTP(fd, output, strlen(output));
             break;
@@ -429,7 +429,6 @@ void processRecieve(in_addr /* address */, int fd, char* data)
             FTP::SendOverDTP(fd, output, file.getLength());
             break;
         }
-//      NYI
         case FTP_HELP:
         case FTP_UNKNOWN:
             FTP::SendSpecialCommandResponse(sock, 502, "Command '"+ command +"' "+ responseCodeMessage[502]);
