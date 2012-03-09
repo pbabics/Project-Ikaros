@@ -60,6 +60,12 @@ debug(false), control(false), daemonize(false), libLoaded(false), terminate(fals
         Daemonize(StringConfigs[CONFIG_STRING_PID_FILE].c_str(), StringConfigs[CONFIG_STRING_WORKING_DIRECTORY].c_str());
 
     _initGlobals();
+    sLog->outString("Project Ikaros - framework based server");
+    sLog->outString("Revision hash: %s   Revision Date:  %s", __ShortCommitHash, __CommitDate);
+    sLog->outString("Built:   %s  %s", __DATE__, __TIME__);
+    sLog->outString();
+    sLog->outString("Using Protocol: %s", StringConfigs[CONFIG_STRING_PROTOCOL_NAME].c_str());
+    sLog->outString();
 }
 
 void Application::ParseParams()

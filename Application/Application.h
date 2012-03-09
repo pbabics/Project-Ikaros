@@ -10,11 +10,12 @@
 #include "Handler.h"
 #include "ConfigMgr.h"
 #include "Daemon.h"
+#include "revision.h"
 
 #ifndef __App
 #define __App
 
-using Files::AsciiFile ;
+using Files::AsciiFile;
 
 
 typedef void (*onConnect)(in_addr, int);

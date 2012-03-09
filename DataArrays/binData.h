@@ -10,7 +10,7 @@ using namespace std;
 #ifndef __BinnaryData
 #define __BinnaryData
 
-typedef unsigned char   byt ;
+typedef unsigned char   byte;
 typedef unsigned short  uint16;
 typedef unsigned int    uint32;
 typedef unsigned long   uint64;
