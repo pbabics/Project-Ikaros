@@ -258,7 +258,11 @@ void processRecieve(in_addr /* address */, int fd, char* data)
                 FTP::SendCommandResponse(sock, 530);
                 return;
             }
-            session.actualDir = session.parentDir;
+            string changeTo = session.actualDir.substr(0, session.actualDir.find_last_not_of('/'));
+            changeTo = changeTo.substr(0, changeTo.find_last_of('/'));
+            if (!changeTo.size())
+                changeTo = '/';
+            session.actualDir = changeTo;
             FTP::SendSpecialCommandResponse(sock, 250, "CDUP successfull");
             break;
         }
@@ -285,6 +289,11 @@ void processRecieve(in_addr /* address */, int fd, char* data)
                 FTP::SendCommandResponse(sock, 530);
                 return;
             }
+            if (!DirectoryInfo::IsDir(string('.' + session.actualDir).c_str()))
+            {
+                FTP::SendCommandResponse(sock, 550);
+                break;
+            }
             protoLog->outDebug("Listing Directory:   %s", string('.' + session.actualDir).c_str());
             TerminalFuction func("ls", "-la \"." + session.actualDir + '"');
             char* output = func.RunWithCallback();
@@ -301,6 +310,11 @@ void processRecieve(in_addr /* address */, int fd, char* data)
             string dir = trim(dat.str().substr(dat.str().find_first_of(' '), string::npos));
             if (dir.compare(".") == 0)
             {
+                if (!DirectoryInfo::IsDir('.' + session.actualDir))
+                {
+                    FTP::SendSpecialCommandResponse(sock, 550, "Directory '"+ session.actualDir +"' does not exists.");
+                    break;
+                }
                 FTP::SendSpecialCommandResponse(sock, 200, "'"+ session.actualDir +"' is actual directory.");
                 break;
             }
@@ -309,6 +323,11 @@ void processRecieve(in_addr /* address */, int fd, char* data)
                 session.actualDir = dir;
                 if (session.actualDir[session.actualDir.length()-1] != '/')
                     session.actualDir += '/';
+                if (!DirectoryInfo::IsDir('.' + session.actualDir))
+                {
+                    FTP::SendSpecialCommandResponse(sock, 550, "Directory '"+ session.actualDir +"' does not exists.");
+                    break;
+                }
                 FTP::SendSpecialCommandResponse(sock, 200, "'"+ session.actualDir +"' is actual directory.");
                 break;
             }
@@ -320,12 +339,17 @@ void processRecieve(in_addr /* address */, int fd, char* data)
 
                 if (session.actualDir.length() == 0  || session.actualDir[session.actualDir.length()-1] != '/')
                     session.actualDir += '/';
+                if (!DirectoryInfo::IsDir('.' + session.actualDir))
+                {
+                    FTP::SendSpecialCommandResponse(sock, 550, "Directory '"+ session.actualDir +"' does not exists.");
+                    break;
+                }
                 FTP::SendSpecialCommandResponse(sock, 200, "'"+ session.actualDir +"' is actual directory.");
                 break;
             }
             if (!DirectoryInfo::IsDir('.' + session.actualDir + dir))
             {
-                FTP::SendCommandResponse(sock, 550);
+                FTP::SendSpecialCommandResponse(sock, 550, "Directory '"+ ('.' + session.actualDir + dir) +"' does not exists.");
                 break;
             }
             session.actualDir += dir;

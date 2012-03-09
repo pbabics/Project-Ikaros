@@ -108,11 +108,18 @@ struct SessionSendStruct
 struct SessionRecvStruct
 {
         SessionRecvStruct(SessionDataStruct& sdata, Socket* sock, const char* fileName): 
-        s(sdata), so(sock), f(fileName) {  }
+        s(sdata), so(sock), f(new char[strlen(fileName) + 1])
+        {
+            char* fi = new char[strlen(fileName) + 1];
+            memset(fi, 0, strlen(fileName) + 1);
+            memcpy(fi, fileName, strlen(fileName));
+            f = fi;
+        }
+        ~SessionRecvStruct() { delete f; }
 
         SessionDataStruct& s;
         Socket* so;
-        const char*   f;
+        const char* f;
 };
 
 std::map<int, int> sessionStatus;
