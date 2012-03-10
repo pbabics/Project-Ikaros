@@ -168,121 +168,116 @@ void* RecvData(void* args)
     uint64 sleepTime = intConfigs[CONFIG_INT_RECV_WAIT_TIME], errSleepTime = intConfigs[CONFIG_INT_RECV_ERROR_WAIT_TIME];
     size_t recieved = 0, recievePart = intConfigs[CONFIG_INT_MAX_DATA_SEGMENT_SIZE];
     bool interrupt = false;
-    BinnaryData* recvData = new BinnaryData();
     char recievedData[recievePart + 1];
 
-    if (!session.isPassive)
+    Files::BinFile file;
+    file.open(fileName, ios_base::trunc | ios_base::binary | ios_base::out);
+    if (file.is_open())
     {
-        TCPSocket* connection = new TCPSocket();
-        int i = connection->Connect(session.ip.ToChar(), session.port);
-        if (!connection->Connected())
+        if (!session.isPassive)
         {
-            FTP::SendCommandResponse(sock, 425); // Cannot open connection
-            session.DTPActive = false;
-            session.activeRecv = NULL;
-            session.abortTranfser = false;
-            protoLog->outDebug("Cannot connect to:  %s:%d connection: %d", session.ip.ToChar(), session.port, i);
-            delete connection;
-            delete recvStat;
-            return NULL;
-        }
-
-
-        while (!session.abortTranfser && connection->Connected() && !interrupt)
-        {
-            memset(recievedData, 0, recievePart + 1);
-            recvReturn = connection->Recv(recievedData, recievePart, 0 );
-            //protoLog->outDebug("Recieved:  %d bytes Actual file size: %lu total recieved: %lu", recvReturn, recvData->size() + recvReturn, recieved);
-            if (recvReturn == -1)
+            TCPSocket* connection = new TCPSocket();
+            int i = connection->Connect(session.ip.ToChar(), session.port);
+            if (!connection->Connected())
             {
-                if (errno != EAGAIN)
+                FTP::SendCommandResponse(sock, 425); // Cannot open connection
+                session.DTPActive = false;
+                session.activeRecv = NULL;
+                session.abortTranfser = false;
+                protoLog->outDebug("Cannot connect to:  %s:%d connection: %d", session.ip.ToChar(), session.port, i);
+                delete connection;
+                delete recvStat;
+                return NULL;
+            }
+
+
+            while (!session.abortTranfser && connection->Connected() && !interrupt)
+            {
+                memset(recievedData, 0, recievePart + 1);
+                recvReturn = connection->Recv(recievedData, recievePart, 0 );
+                if (recvReturn == -1)
+                {
+                    if (errno != EAGAIN)
+                        break;
+                    usleep(errSleepTime);
+                    continue;
+                }
+                if (recvReturn == 0)
+                {
+                    interrupt = true;
                     break;
-                usleep(errSleepTime);
-                continue;
+                }
+                if (recvReturn > 0)
+                {
+                    recieved += recvReturn;
+                    file.write(recievedData, recvReturn);
+                }
+                if (sleepTime)
+                    usleep(sleepTime);
             }
-            if (recvReturn == 0)
-            {
-                interrupt = true;
-                break;
-            }
-            if (recvReturn > 0)
-            {
-                recieved += recvReturn;
-                recvData->write(recievedData, recvReturn);
-            }
-            if (sleepTime)
-                usleep(sleepTime);
+            connection->Close();
+            file.close();
+            delete connection;
         }
-        connection->Close();
-        delete connection;
+        else
+        {
+            int& lSock = session.passiveSock;
+
+            if (lSock < 0)
+            {
+                FTP::SendCommandResponse(sock, 425);
+                session.DTPActive = false;
+                session.activeRecv = NULL;
+                session.abortTranfser = false;
+                lSock = close(lSock);
+                delete recvStat;
+                return NULL;
+            }
+
+            struct sockaddr_in peer;
+            unsigned int peerSize = sizeof(peer);
+            int newSocket = accept(lSock, (sockaddr*)&peer, &peerSize);
+            Socket* pSock = new Socket(newSocket, peer);
+
+            while (!session.abortTranfser && !interrupt)
+            {
+                memset(recievedData, 0, recievePart + 1);
+                recvReturn = pSock->Recieve(recievedData, recievePart, 0 );
+                if (recvReturn == -1)
+                {
+                    if (errno != EAGAIN)
+                        break;
+                    usleep(errSleepTime);
+                    continue;
+                }
+                if (recvReturn == 0)
+                {
+                    interrupt = true;
+                    break;
+                }
+                if (recvReturn > 0)
+                {
+                    recieved += recvReturn;
+                    file.write(recievedData, recvReturn);
+                }
+                if (sleepTime)
+                    usleep(sleepTime);
+            }
+            pSock->Close();
+            lSock = close(lSock);
+            file.close();
+            delete pSock;
+        }
     }
     else
-    {
-        int& lSock = session.passiveSock;
-
-        if (lSock < 0)
-        {
-            FTP::SendCommandResponse(sock, 425);
-            session.DTPActive = false;
-            session.activeRecv = NULL;
-            session.abortTranfser = false;
-            lSock = close(lSock);
-            delete recvStat;
-            return NULL;
-        }
-
-        struct sockaddr_in peer;
-        unsigned int peerSize = sizeof(peer);
-        int newSocket = accept(lSock, (sockaddr*)&peer, &peerSize);
-        Socket* pSock = new Socket(newSocket, peer);
-
-        while (!session.abortTranfser && !interrupt)
-        {
-            memset(recievedData, 0, recievePart + 1);
-            recvReturn = pSock->Recieve(recievedData, recievePart, 0 );
-            //protoLog->outDebug("Recieved:  %d bytes Actual file size: %lu total recieved: %lu", recvReturn, recvData->size() + recvReturn, recieved);
-            if (recvReturn == -1)
-            {
-                if (errno != EAGAIN)
-                    break;
-                usleep(errSleepTime);
-                continue;
-            }
-            if (recvReturn == 0)
-            {
-                interrupt = true;
-                break;
-            }
-            if (recvReturn > 0)
-            {
-                recieved += recvReturn;
-                recvData->write(recievedData, recvReturn);
-            }
-            if (sleepTime)
-                usleep(sleepTime);
-        }
-        pSock->Close();
-        lSock = close(lSock);
-        delete pSock;
-    }
+        protoLog->outError("Cannot open file '%s' for writing", fileName);
 
     if (!session.abortTranfser)
         FTP::SendCommandResponse(sock, 226);
     if (session.abortTranfser)
         FTP::SendCommandResponse(sock, 426);
 
-    protoLog->outDebug("RecvData Recieved:  %lu Bytes Recieved data Size:  %lu", recieved, recvData->size());
-    Files::BinFile file;
-    file.open(fileName, ios_base::trunc | ios_base::binary | ios_base::out);
-    if (file.is_open())
-    {
-        protoLog->outDebug("RecvData saving (%lu bytes) into file:  %s",  recvData->size(), fileName);
-        file.write((const char*)recvData, recvData->size());
-        file.close();
-    }
-    else
-        protoLog->outError("Cannot open file '%s' for writing", fileName);
-    recvData->clear();
+    protoLog->outDebug("RecvData Recieved:  %lu Bytes", recieved);
 
     delete recvStat;
     session.DTPActive = false;
