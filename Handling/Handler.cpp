@@ -87,11 +87,12 @@ void PacketHandler::ProcessQueue()
             sigaddset(&suspendSig, SIGINT);
             sigaddset(&suspendSig, SIGTERM);
             app->threadMgr->SetThreadStatus(GetThisThread(), THREAD_SUSPENDED);
-            app->freezeDetector->Pause();
+            if (app->freezeDetector)
+                app->freezeDetector->Pause();
             sigwait(&suspendSig, &sig);
             app->threadMgr->SetThreadStatus(GetThisThread(), THREAD_ACTIVE);
-            _diffTime = getMsTimeDiffToNow(workBegan);
-            app->freezeDetector->Continue();
+            if (app->freezeDetector)
+                app->freezeDetector->Continue();
             //sLog->outDebug("Process Queue was suspended %lu milliseconds", getMsTimeDiffToNow(workBegan));
         }
 
