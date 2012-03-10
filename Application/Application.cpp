@@ -145,7 +145,7 @@ void Application::LoadConfigs()
         LoadIntConfig("Server.LogLevel", CONFIG_INT_LOG_LEVEL, 0);
 
         LoadBoolConfig("Server.EnableFreezeDetector", CONFIG_BOOL_ENABLE_FREEZE_DETECTOR, true);
-        LoadIntConfig("Server.FreezeDetectorMaxDiff", CONFIG_INT_FREEZE_DETECTOR_MAX_DIFF, 30000);
+        LoadIntConfig("Server.FreezeDetectorMaxDiff", CONFIG_INT_FREEZE_DETECTOR_MAX_DIFF, 300000);
 
 
         LoadIntConfig("Protocol.BindPort", CONFIG_INT_BIND_PORT, 3535);
