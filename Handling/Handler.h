@@ -69,6 +69,7 @@ class PacketHandler
     public:
             typedef std::queue<Event> EventQueue;
             typedef std::list<DelayedEvent> DelayedEventQueue;
+
             PacketHandler();
             ~PacketHandler();
 
@@ -78,6 +79,7 @@ class PacketHandler
             void UpdateDelayed();
             void Terminate();
 
+            uint64 _diffTime;
     private:
             SignalHandler* sigHandler;
 

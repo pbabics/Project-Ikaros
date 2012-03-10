@@ -8,6 +8,7 @@ include_directories(
 )
 
 add_library(${LibraryName} SHARED Base.cpp)
+
 install(TARGETS ${LibraryName} DESTINATION ${InstallDirectory})
 
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${ConfigName}")

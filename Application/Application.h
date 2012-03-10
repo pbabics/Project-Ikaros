@@ -42,6 +42,7 @@ enum IntOptions
 {
     CONFIG_INT_BIND_PORT,
     CONFIG_INT_LOG_LEVEL,
+    CONFIG_INT_FREEZE_DETECTOR_MAX_DIFF,
     CONFIG_INT_MAX
 };
 
@@ -65,6 +66,7 @@ enum BoolOptions
 {
     CONFIG_BOOL_DAEMONIZE,
     CONFIG_BOOL_LOG,
+    CONFIG_BOOL_ENABLE_FREEZE_DETECTOR,
     CONFIG_BOOL_MAX
 };
 
@@ -74,6 +76,34 @@ class ThreadMgr;
 class ConnectionMgr;
 
 extern SimpleLog* sLog;
+
+void* CallFreezeDetector(void* obj);
+
+class FreezeDetector
+{
+    friend void* CallFreezeDetector(void* obj);
+
+    public:
+        FreezeDetector(uint64 maxDiffTime, uint64& diff): 
+        _maxDiffTime(maxDiffTime), _diff(diff), _exit(false), _pause(false), _active(false), _detectorThread(NULL) { }
+
+        void Run();
+        void Exit() { _exit = true; }
+        void Pause()  { _pause = true; }
+        void Continue() { _detectorThread->Continue(); }
+
+        int GetStatus() const { if (_detectorThread) return _detectorThread->status; return 0; }
+
+    private:
+        uint64 _maxDiffTime;
+        uint64& _diff;
+        bool _exit;
+        bool _pause;
+        bool _active;
+        void* _process(void*);
+        Thread* _detectorThread;
+};
+
 
 class Application : public Daemon
 {
@@ -90,6 +120,7 @@ class Application : public Daemon
             ConnectionMgr *socketMgr;
             ThreadMgr *threadMgr;
             PacketHandler *handler;
+            FreezeDetector *freezeDetector;
 
             bool LoadLibrary();
 
@@ -97,8 +128,6 @@ class Application : public Daemon
 
             inline bool Exiting() const { return terminate; }
             void Terminate();
-
-            pthread_mutex_t* GetLogWriteMutex() { return &logMutex; }
 
     protected:
             Options FileOptions;
@@ -115,7 +144,9 @@ class Application : public Daemon
             string StringConfigs[CONFIG_STRING_MAX];
 
             string ApplicationAddress;
-            pthread_mutex_t logMutex;
+
+            uint64 _diffTime;
+            timeval _lastUpdate;
 
     private:
             void ParseParams();

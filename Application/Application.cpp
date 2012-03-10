@@ -1,9 +1,44 @@
 #include "Application.h"
 
+void* CallFreezeDetector(void* obj)
+{
+    ((FreezeDetector*)obj)->_process(NULL);
+    return NULL;
+}
+
+void FreezeDetector::Run()
+{
+    _detectorThread = Thread::CreateThread(CallFreezeDetector, this);
+}
+
+void* FreezeDetector::_process(void*)
+{
+    _active = true;
+    _detectorThread->status = THREAD_ACTIVE;
+    while (!_exit)
+    {
+        if (_maxDiffTime < _diff)
+        {
+            sLog->outError("Freeze Detected !!  Diff Time: %lu", _diff);
+            assert(false);
+        }
+        if (_pause)
+        {
+            Thread::SuspendThisThread();
+            _pause = false;
+        }
+        usleep(_maxDiffTime - _diff);
+    }
+    _detectorThread->status = THREAD_EXIT;
+    _active = false;
+    return NULL;
+}
 
 Application::Application(int argc, char* argv[], const char *conf):
-debug(false), control(false), daemonize(false), libLoaded(false), terminate(false)
+debug(false), control(false), daemonize(false), libLoaded(false), terminate(false), 
+_diffTime(0)
 {
+    gettimeofday(&_lastUpdate, 0);
     if (argc > 0)
     {
         ApplicationAddress = argv[0];
@@ -64,7 +99,7 @@ debug(false), control(false), daemonize(false), libLoaded(false), terminate(fals
     sLog->outString("Revision hash: %s   Revision Date:  %s", __ShortCommitHash, __CommitDate);
     sLog->outString("Built:   %s  %s", __DATE__, __TIME__);
     sLog->outString();
-    sLog->outString("Using Protocol: %s", StringConfigs[CONFIG_STRING_PROTOCOL_NAME].c_str());
+    sLog->outString("Initialized in: %lu ms", getMsTimeDiffToNow(_lastUpdate));
     sLog->outString();
 }
 
@@ -96,8 +131,13 @@ void Application::LoadConfigs()
         LoadBoolConfig("Server.Daemonize", CONFIG_BOOL_DAEMONIZE, false);
         LoadStringConfig("Server.PidFile", CONFIG_STRING_PID_FILE, "/var/lock/ikaros.pid");
         LoadStringConfig("Server.WorkingDirectory", CONFIG_STRING_WORKING_DIRECTORY, ApplicationAddress.substr(0, ApplicationAddress.find_last_of('/')));
+
         LoadBoolConfig("Server.Log", CONFIG_BOOL_LOG, true);
         LoadIntConfig("Server.LogLevel", CONFIG_INT_LOG_LEVEL, 0);
+
+        LoadBoolConfig("Server.EnableFreezeDetector", CONFIG_BOOL_ENABLE_FREEZE_DETECTOR, true);
+        LoadIntConfig("Server.FreezeDetectorMaxDiff", CONFIG_INT_FREEZE_DETECTOR_MAX_DIFF, 30000);
+
 
         LoadIntConfig("Protocol.BindPort", CONFIG_INT_BIND_PORT, 3535);
         LoadStringConfig("Protocol.BindIp", CONFIG_STRING_BIND_IP, "127.0.0.1");
@@ -135,6 +175,9 @@ void Application::outDebugParams() const
     sLog->outString("CONFIG_STRING_WORKING_DIRECTORY='%s'", StringConfigs[CONFIG_STRING_WORKING_DIRECTORY].c_str());
     sLog->outString("CONFIG_BOOL_LOG=%s", toString(BoolConfigs[CONFIG_BOOL_LOG]));
     sLog->outString("CONFIG_INT_LOG_LEVEL=%d", IntConfigs[CONFIG_INT_LOG_LEVEL]);
+    sLog->outString("CONFIG_BOOL_ENABLE_FREEZE_DETECTOR=%s", toString(BoolConfigs[CONFIG_BOOL_ENABLE_FREEZE_DETECTOR]));
+    sLog->outString("CONFIG_INT_FREEZE_DETECTOR_MAX_DIFF=%d", IntConfigs[CONFIG_INT_FREEZE_DETECTOR_MAX_DIFF]);
+
     sLog->outString("Control=%s", toString(control));
     sLog->outString("Debug=%s", toString(debug));
     sLog->outString();
@@ -291,6 +334,8 @@ void Application::_initGlobals()
     socketMgr = new ConnectionMgr();
     threadMgr = new ThreadMgr();
     handler = new PacketHandler();
+    if (BoolConfigs[CONFIG_BOOL_ENABLE_FREEZE_DETECTOR])
+        freezeDetector = new FreezeDetector(IntConfigs[CONFIG_INT_FREEZE_DETECTOR_MAX_DIFF], handler->_diffTime);
 }
 
 void Application::_uninitGlobals()
@@ -300,6 +345,8 @@ void Application::_uninitGlobals()
     delete socketMgr;
     delete threadMgr;
     delete handler;
+    if (freezeDetector)
+        delete freezeDetector;
     delete sLog;
 }
 
@@ -389,7 +436,10 @@ uint32 Application::Update()
     selectTimeout.tv_sec = 0;
     selectTimeout.tv_usec = 500000;
 
+    gettimeofday(&_lastUpdate, 0);
+
     int ProcessQueue = threadMgr->CreateThread("Queue", &CallProcessQueue, handler);
+    freezeDetector->Run();
     if (ProcessQueue == -1)
     {
         sLog->outError("[Recv Thread] Executing Packet Handling Queue Failed errno: %d",errno);
@@ -403,6 +453,8 @@ uint32 Application::Update()
         selectTimeout.tv_usec = 500000;
         nfds = ((socketMgr->GetHighestFd() > ServerSocket) ? socketMgr->GetHighestFd() : ServerSocket) + 1;
         r = select(nfds, &test, NULL, NULL, &selectTimeout);
+        _diffTime = getMsTimeDiffToNow(_lastUpdate);
+        gettimeofday(&_lastUpdate, 0);
         if (r == 0)
             continue;
 

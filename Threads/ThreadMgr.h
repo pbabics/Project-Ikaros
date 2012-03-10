@@ -54,13 +54,62 @@ struct Thread
     static Thread* CreateThread(void* (*func)(void*), void* args);
     operator pthread_t() { return thread; }
     operator int() { return id; }
+
+    void Kill() const
+    {
+        pthread_kill(thread, SIGKILL); 
+    }
+
+    void Terminate() const
+    {
+        pthread_kill(thread, SIGTERM); 
+    }
+
+    void Interrupt() const
+    {
+        pthread_kill(thread, SIGINT); 
+    }
+
+    void Continue() const
+    {
+        pthread_kill(thread, SIGCONT); 
+    }
+
+    void SendSignal(int sig)
+    {
+        pthread_kill(thread, sig);
+    }
+
+    void Suspend()
+    {
+        sigset_t suspendSig;
+        int sig = SIGCONT;
+        sigemptyset(&suspendSig);
+        sigaddset(&suspendSig, SIGCONT);
+        sigaddset(&suspendSig, SIGINT);
+        sigaddset(&suspendSig, SIGTERM);
+        status = THREAD_SUSPENDED;
+        sigwait(&suspendSig, &sig);
+        status = THREAD_ACTIVE;
+    }
+
+    static void SuspendThisThread()
+    {
+        sigset_t suspendSig;
+        int sig = SIGCONT;
+        sigemptyset(&suspendSig);
+        sigaddset(&suspendSig, SIGCONT);
+        sigaddset(&suspendSig, SIGINT);
+        sigaddset(&suspendSig, SIGTERM);
+        sigwait(&suspendSig, &sig);
+    }
 };
 
 class ThreadMgr
 {
     public:
-        ThreadMgr(){ pThreads.clear(); }
-        ~ThreadMgr(){ pThreads.clear(); }
+        ThreadMgr() { pThreads.clear(); }
+        ~ThreadMgr() { pThreads.clear(); }
 
         int CreateThread(string ThreadName, CalledFunction func, void* args);
         int CreateThread(CalledFunction func, void* args);

@@ -26,3 +26,23 @@ int setNonblocking(int fd)
     return ioctl(fd, FIOBIO, &flags);
 #endif
 }
+
+uint64 getMsTimeDiff(timeval a, timeval b)
+{
+    return (b.tv_sec - a.tv_sec) * 1000 + (b.tv_usec - a.tv_usec) / 1000;
+}
+
+uint64 getMsTimeDiffToNow(timeval a)
+{
+    timeval b;
+    gettimeofday(&b, 0);
+    return  (b.tv_sec - a.tv_sec) * 1000 + (b.tv_usec - a.tv_usec) / 1000;
+}
+
+int nanosleep(uint64 time)
+{
+    timespec t;
+    t.tv_sec = 0;
+    t.tv_nsec = time;
+    return nanosleep(&t, NULL);
+}

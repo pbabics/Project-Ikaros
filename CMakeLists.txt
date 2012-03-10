@@ -77,6 +77,7 @@ set (MultiServer_LINK_FLAGS  ${CMAKE_CXX_FLAGS})
 
 add_definitions(${CMAKE_CXX_FLAGS})
 
+
 set (STAT_CORE
     Utilities/Utils.cpp
     DataArrays/binData.cpp
@@ -96,7 +97,6 @@ set (STAT_CORE
 set (STAT_MAIN main.cpp)
 
 
-
 add_library(Core STATIC ${STAT_CORE})
 target_link_libraries(Core ${CMAKE_DL_LIBS} Core)
 
@@ -112,7 +112,8 @@ if (Protocols)
 endif (Protocols)
 
 file(MAKE_DIRECTORY ${InstallDirectory})
+
 install(TARGETS MultiServer DESTINATION ${InstallDirectory})
 if (NOT EXISTS "${InstallDirectory}config.conf")
-install(FILES  config.conf DESTINATION ${InstallDirectory})
+    install(FILES  config.conf DESTINATION ${InstallDirectory})
 endif (NOT EXISTS "${InstallDirectory}config.conf")

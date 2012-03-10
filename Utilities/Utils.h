@@ -1,10 +1,26 @@
 #include "Includes.h"
+#include "Defs.h"
 
 #ifndef __Utils
 #define __Utils
 
 std::string& refTrim(std::string &s);
 int setNonblocking(int fd);
+
+uint64 getMsTimeDiff(timeval a, timeval b);
+uint64 getMsTimeDiffToNow(timeval a);
+int nanosleep(uint64 time);
+
+inline int usleep(uint64 time)
+{
+    return nanosleep(time * IN_MICROSECONDS);
+}
+
+inline int msleep(uint64 time)
+{
+    return nanosleep(time * IN_MILLISECONDS);
+}
+
 
 
 inline const char* toString(bool b)

@@ -14,6 +14,7 @@
 #include "Application.h"
 #include "Socket.h"
 #include "SimpleLog.h"
+#include "Utils.cpp"
 
 extern Application* app;
 

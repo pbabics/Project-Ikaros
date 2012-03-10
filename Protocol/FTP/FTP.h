@@ -1,5 +1,6 @@
 #include "Includes.cpp"
 #include "defines.h"
+#include "Utils.h"
 
 #include "ConfigMgr.cpp"
 

@@ -45,7 +45,8 @@ void* SendData(void* args)
     size_t dataLength = sendStat->l;
     FTP::SendCommandResponse(sock, 150);
 
-    int sendReturn = 0, sleepTime = intConfigs[CONFIG_INT_SEND_WAIT_TIME], errSleepTime = intConfigs[CONFIG_INT_SEND_ERROR_WAIT_TIME];
+    int sendReturn = 0;
+    uint64 sleepTime = intConfigs[CONFIG_INT_SEND_WAIT_TIME], errSleepTime = intConfigs[CONFIG_INT_SEND_ERROR_WAIT_TIME];
     size_t sended = 0, sendingPart = intConfigs[CONFIG_INT_MAX_DATA_SEGMENT_SIZE];
     bool interrupt = false;
 
@@ -163,7 +164,8 @@ void* RecvData(void* args)
     const char* fileName = recvStat->f;
     FTP::SendCommandResponse(sock, 150);
 
-    int recvReturn = 0, sleepTime = intConfigs[CONFIG_INT_RECV_WAIT_TIME], errSleepTime = intConfigs[CONFIG_INT_RECV_ERROR_WAIT_TIME];
+    int recvReturn = 0;
+    uint64 sleepTime = intConfigs[CONFIG_INT_RECV_WAIT_TIME], errSleepTime = intConfigs[CONFIG_INT_RECV_ERROR_WAIT_TIME];
     size_t recieved = 0, recievePart = intConfigs[CONFIG_INT_MAX_DATA_SEGMENT_SIZE];
     bool interrupt = false;
     BinnaryData* recvData = new BinnaryData();

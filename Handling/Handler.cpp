@@ -6,38 +6,8 @@ void SigContHandler(int)
 
 }
 
-uint64 getMsTimeDiff(timeval a, timeval b)
-{
-    return (b.tv_sec - a.tv_sec) * 1000 + (b.tv_usec - a.tv_usec) / 1000;
-}
-
-uint64 getMsTimeDiffToNow(timeval a)
-{
-    timeval b;
-    gettimeofday(&b, 0);
-    return  (b.tv_sec - a.tv_sec) * 1000 + (b.tv_usec - a.tv_usec) / 1000;
-}
-
-int nanosleep(uint64 time)
-{
-    timespec t;
-    t.tv_sec = 0;
-    t.tv_nsec = time;
-    return nanosleep(&t, NULL);
-}
-
-inline int usleep(uint64 time)
-{
-    return nanosleep(time * IN_MICROSECONDS);
-}
-
-inline int msleep(uint64 time)
-{
-    return nanosleep(time * IN_MILLISECONDS);
-}
-
 PacketHandler::PacketHandler():
-process(true)
+_diffTime(0), process(true)
 {
 
 }
@@ -101,11 +71,14 @@ void PacketHandler::ProcessQueue()
     sigset_t suspendSig;
     sigemptyset(&suspendSig);
     int sig = SIGCONT;
+
     timeval workBegan;
     gettimeofday(&workBegan, 0);
+
     while (process)
     {
         UpdateDelayed();
+        _diffTime = getMsTimeDiffToNow(workBegan);
         gettimeofday(&workBegan, 0);
         if (!queue.size() && !delayedQueue.size())
         {
@@ -114,8 +87,11 @@ void PacketHandler::ProcessQueue()
             sigaddset(&suspendSig, SIGINT);
             sigaddset(&suspendSig, SIGTERM);
             app->threadMgr->SetThreadStatus(GetThisThread(), THREAD_SUSPENDED);
+            app->freezeDetector->Pause();
             sigwait(&suspendSig, &sig);
             app->threadMgr->SetThreadStatus(GetThisThread(), THREAD_ACTIVE);
+            _diffTime = getMsTimeDiffToNow(workBegan);
+            app->freezeDetector->Continue();
             //sLog->outDebug("Process Queue was suspended %lu milliseconds", getMsTimeDiffToNow(workBegan));
         }
 
@@ -147,6 +123,7 @@ void PacketHandler::ProcessQueue()
             if (delayedQueue.size())
                 msleep(500);
     }
+    app->freezeDetector->Exit();
     sLog->outControl("[PacketHandler] Process Queue exit");
     ThreadMgr::Exit(NULL);
 }
