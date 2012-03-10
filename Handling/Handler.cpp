@@ -68,9 +68,6 @@ void PacketHandler::ProcessQueue()
     sigHandler = new SignalHandler();
     sigHandler->setSignalHandler(Continue, SigContHandler);
     sLog->outControl("[PacketHandler] Process Queue initialization");
-    sigset_t suspendSig;
-    sigemptyset(&suspendSig);
-    int sig = SIGCONT;
 
     timeval workBegan;
     gettimeofday(&workBegan, 0);
@@ -83,13 +80,10 @@ void PacketHandler::ProcessQueue()
         if (!queue.size() && !delayedQueue.size())
         {
             //sLog->outDebug("Process Queue goes to sleep (until data arrives)");
-            sigaddset(&suspendSig, SIGCONT);
-            sigaddset(&suspendSig, SIGINT);
-            sigaddset(&suspendSig, SIGTERM);
             app->threadMgr->SetThreadStatus(GetThisThread(), THREAD_SUSPENDED);
             if (app->freezeDetector)
                 app->freezeDetector->Pause();
-            sigwait(&suspendSig, &sig);
+            Thread::SuspendThisThread();
             app->threadMgr->SetThreadStatus(GetThisThread(), THREAD_ACTIVE);
             if (app->freezeDetector)
                 app->freezeDetector->Continue();
