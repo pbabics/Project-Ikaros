@@ -76,7 +76,6 @@ void PacketHandler::ProcessQueue()
     {
         UpdateDelayed();
         _diffTime = getMsTimeDiffToNow(workBegan);
-        gettimeofday(&workBegan, 0);
         if (!queue.size() && !delayedQueue.size())
         {
             //sLog->outDebug("Process Queue goes to sleep (until data arrives)");
@@ -89,7 +88,7 @@ void PacketHandler::ProcessQueue()
                 app->freezeDetector->Continue();
             //sLog->outDebug("Process Queue was suspended %lu milliseconds", getMsTimeDiffToNow(workBegan));
         }
-
+        gettimeofday(&workBegan, 0);
         if (queue.size())
         {
             Event& event = queue.front();
