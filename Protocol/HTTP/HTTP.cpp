@@ -7,19 +7,19 @@ void* SendOverNewThread(void* args)
         return NULL;
     if (data->dat)
     {
-        data->sock->Send(*data->dat);
+        data->sock->Send(*data->dat, MSG_NOSIGNAL);
         delete data->dat;
     }
     else
     if (data->stream)
     {
-        data->sock->Send(*data->stream);
+        data->sock->Send(*data->stream, MSG_NOSIGNAL);
         delete data->stream;
     }
     else
     if (data->data)
     {
-        data->sock->Send(data->data, data->length);
+        data->sock->Send(data->data, data->length, MSG_NOSIGNAL);
     }
     delete data;
     return NULL;

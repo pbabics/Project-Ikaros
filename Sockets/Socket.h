@@ -43,6 +43,11 @@ class Socket
             operator int() { return socket; }
             inline int GetFD() const { return socket; }
 
+            int SetSocketOption(int level, int option_name, const void *option_value, socklen_t option_len)
+            {
+                return setsockopt(socket, level, option_name, option_value, option_len);
+            }
+
     private:
             int socket;
             int error;
