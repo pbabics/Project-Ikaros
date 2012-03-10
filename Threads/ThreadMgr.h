@@ -55,29 +55,29 @@ struct Thread
     operator pthread_t() { return thread; }
     operator int() { return id; }
 
-    void Kill() const
+    int Kill() const
     {
-        pthread_kill(thread, SIGKILL); 
+        return pthread_kill(thread, SIGKILL); 
     }
 
-    void Terminate() const
+    int Terminate() const
     {
-        pthread_kill(thread, SIGTERM); 
+        return pthread_kill(thread, SIGTERM); 
     }
 
-    void Interrupt() const
+    int Interrupt() const
     {
-        pthread_kill(thread, SIGINT); 
+        return pthread_kill(thread, SIGINT); 
     }
 
-    void Continue() const
+    int Continue() const
     {
-        pthread_kill(thread, SIGCONT); 
+        return pthread_kill(thread, SIGCONT); 
     }
 
-    void SendSignal(int sig)
+    int SendSignal(int sig)
     {
-        pthread_kill(thread, sig);
+        return pthread_kill(thread, sig);
     }
 
     void Suspend()

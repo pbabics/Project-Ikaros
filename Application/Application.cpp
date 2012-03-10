@@ -95,7 +95,15 @@ _diffTime(0)
         Daemonize(StringConfigs[CONFIG_STRING_PID_FILE].c_str(), StringConfigs[CONFIG_STRING_WORKING_DIRECTORY].c_str());
 
     _initGlobals();
+    sLog->outString(" ___    __    ___       __        ______      ___     ________");
+    sLog->outString("|   |  |  |  /  /      /  \\      |   __ \\    /   \\   /   ____/");
+    sLog->outString("|   |  |  |_/  /      / /\\ \\     |  |  | \\  /  /\\ \\  \\  \\____");
+    sLog->outString("|   |  |      /      /  \\/  \\    |  |__| / /  /  \\ \\  \\____  \\");
+    sLog->outString("|   |  |   _  \\     /   __   \\   |      /  \\  \\  / / ___   \\  \\");
+    sLog->outString("|   |  |  | \\  \\   /   /  \\   \\  |  |\\  \\   \\  \\/ /  \\  \\__/  /");
+    sLog->outString("|___|  |__|  \\__\\ /___/    \\___\\ |__| \\__\\   \\___/    \\______/");
     sLog->outString("Project Ikaros - framework based server");
+    sLog->outString("Copyright © (2011 - 2012) %s", "Peter  Daemon / NTX Bábics");
     sLog->outString("Revision hash: %s   Revision Date:  %s", __ShortCommitHash, __CommitDate);
     sLog->outString("Built:   %s  %s", __DATE__, __TIME__);
     sLog->outString();
