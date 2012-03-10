@@ -95,6 +95,7 @@ _diffTime(0)
         Daemonize(StringConfigs[CONFIG_STRING_PID_FILE].c_str(), StringConfigs[CONFIG_STRING_WORKING_DIRECTORY].c_str());
 
     _initGlobals();
+
     sLog->outString(" ___    __    ___       __        ______      ___     ________");
     sLog->outString("|   |  |  |  /  /      /  \\      |   __ \\    /   \\   /   ____/");
     sLog->outString("|   |  |  |_/  /      / /\\ \\     |  |  | \\  /  /\\ \\  \\  \\____");
@@ -336,6 +337,9 @@ bool Application::LoadLibrary()
 
 void Application::_initGlobals()
 {
+    writeMutex = new pthread_mutex_t;
+    pthread_mutex_init(writeMutex, NULL);
+
     sLog = new SimpleLog(control, debug, "Server.log");
     sigHandler = new SignalHandler();
     libLoader = new SharedLibrary();
@@ -356,6 +360,7 @@ void Application::_uninitGlobals()
     if (freezeDetector)
         delete freezeDetector;
     delete sLog;
+    delete writeMutex;
 }
 
 void Application::_InitServerSocket()
@@ -375,8 +380,8 @@ void Application::_InitServerSocket()
     dest.sin_family = AF_INET;
     dest.sin_port = htons(IntConfigs[CONFIG_INT_BIND_PORT]);
     dest.sin_addr.s_addr = inet_addr(StringConfigs[CONFIG_STRING_BIND_IP].c_str());
-    //Bind
-    r= bind(ServerSocket, (struct sockaddr*)&dest, sizeof(dest));
+    // Bind
+    r = bind(ServerSocket, (struct sockaddr*)&dest, sizeof(dest));
     if (r == -1)
     {
         sLog->outError("Bind Returned Error: %d", errno);
@@ -384,8 +389,8 @@ void Application::_InitServerSocket()
         exit(-1);
     }
 
-    //Listen
-    r=listen(ServerSocket, 5);
+    // Listen
+    r = listen(ServerSocket, 1024);
     if (r == -1)
     {
         sLog->outError("Listen Returned Error: %d", errno);
@@ -457,10 +462,11 @@ uint32 Application::Update()
     while (!terminate)
     {
         test = Recv;
-        selectTimeout.tv_sec = 1;
+        selectTimeout.tv_sec = 10;
         selectTimeout.tv_usec = 500000;
         nfds = ((socketMgr->GetHighestFd() > ServerSocket) ? socketMgr->GetHighestFd() : ServerSocket) + 1;
         r = select(nfds, &test, NULL, NULL, &selectTimeout);
+
         _diffTime = getMsTimeDiffToNow(_lastUpdate);
         gettimeofday(&_lastUpdate, 0);
         if (r == 0)
@@ -481,7 +487,7 @@ uint32 Application::Update()
             setNonblocking(newSocket);
             Socket* sock = new Socket(newSocket, peer);
             socketMgr->AddSocket(sock);
-            sLog->outDebug("[Recv Thread] Recieved New Connection From: %s FD: %d", inet_ntoa(peer.sin_addr), sock->GetFD());
+            sLog->outDebug("[Recv Thread] Recieved New Connection From: %s FD: %d", inet_ntoa(peer.sin_addr), newSocket);
             if (proto.OnConnect)
             {
                 //handler->AddDelayedEvent(DelayedEvent(EVENT_CONNECT, newSocket, peer.sin_addr, 100));

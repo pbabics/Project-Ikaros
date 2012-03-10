@@ -13,6 +13,8 @@
 using std::endl ;
 using std::cout ;
 
+extern pthread_mutex_t* writeMutex;
+
 class SimpleLog
 {
     public:
@@ -29,7 +31,6 @@ class SimpleLog
         time_t d ;
         bool &Debug;
         bool &Control;
-        pthread_mutex_t writeMutex;
 };
 
 #endif

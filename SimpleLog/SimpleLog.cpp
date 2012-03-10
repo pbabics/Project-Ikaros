@@ -10,21 +10,23 @@ logf(NULL), mdate(NULL), Debug(D), Control(C)
         fclose(fopen(logf, "w"));
     }
     mdate= new char[256];
-    pthread_mutex_init(&writeMutex, NULL);
+    if (!writeMutex)
+        pthread_mutex_init(writeMutex, NULL);
 }
 
 SimpleLog::~SimpleLog()
 {
     if (mdate)
         delete mdate;
-    pthread_mutex_destroy(&writeMutex);
+    if (writeMutex)
+        pthread_mutex_destroy(writeMutex);
 }
 
 int SimpleLog::outControl(const char* format, ...)
 {
     if (Control)
     {
-        pthread_mutex_lock(&writeMutex);
+        pthread_mutex_lock(writeMutex);
         va_list arg;
         int done = 0;
         if (strlen(format))
@@ -53,7 +55,7 @@ int SimpleLog::outControl(const char* format, ...)
         }
         std::cout << std::endl;
         std::cout.flush();
-        pthread_mutex_unlock(&writeMutex);
+        pthread_mutex_unlock(writeMutex);
         return done;
     }
     else
@@ -64,7 +66,7 @@ int SimpleLog::outString(const char* format, ...)
 {
     va_list arg;
     int done = 0;
-    pthread_mutex_lock(&writeMutex);
+    pthread_mutex_lock(writeMutex);
     if (strlen(format))
     {
         memset(mdate, 0, 256);
@@ -92,7 +94,7 @@ int SimpleLog::outString(const char* format, ...)
     }
     std::cout << std::endl;
     std::cout.flush();
-    pthread_mutex_unlock(&writeMutex);
+    pthread_mutex_unlock(writeMutex);
     return done;
 }
 
@@ -100,7 +102,7 @@ int SimpleLog::outDebug(const char* format, ...)
 {
     if (Debug)
     {
-        pthread_mutex_lock(&writeMutex);
+        pthread_mutex_lock(writeMutex);
         va_list arg;
         int done = 0;
         if (strlen(format))
@@ -130,7 +132,7 @@ int SimpleLog::outDebug(const char* format, ...)
         va_end(arg);
         std::cout << std::endl;
         std::cout.flush();
-        pthread_mutex_unlock(&writeMutex);
+        pthread_mutex_unlock(writeMutex);
         return done;
     }
     else
@@ -141,7 +143,7 @@ int SimpleLog::outError(const char* format, ...)
 {
     va_list arg;
     int done = 0;
-    pthread_mutex_lock(&writeMutex);
+    pthread_mutex_lock(writeMutex);
     if (strlen(format))
     {
         memset(mdate, 0, 200);
@@ -169,6 +171,6 @@ int SimpleLog::outError(const char* format, ...)
     }
     std::cout << std::endl;
     std::cout.flush();
-    pthread_mutex_unlock(&writeMutex);
+    pthread_mutex_unlock(writeMutex);
     return done;
 }

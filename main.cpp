@@ -13,6 +13,7 @@
 
 SimpleLog* sLog;
 Application* app;
+pthread_mutex_t* writeMutex;
 
 int main(int argc, char* argv[])
 {

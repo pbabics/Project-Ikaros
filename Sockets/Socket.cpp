@@ -8,9 +8,8 @@ Socket::~Socket()
 
 int Socket::Close()
 {
-    if (socket && isConnected)
-        return close(socket);
-    return 0;
+    shutdown(socket, SHUT_RDWR);
+    return close(socket);
 }
 
 int Socket::Send(const void* buffer, size_t len, int flags)
