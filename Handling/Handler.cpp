@@ -104,11 +104,34 @@ void PacketHandler::ProcessQueue()
                     delete &event.data;
                     break;
                 case EVENT_SEND:
-                break;
+                    if (app->proto.OnSend)
+                        app->proto.OnSend(event.data);
+                    delete &event.data;
+                    break;
                 case EVENT_DISCONNECT:
                     if (app->proto.OnDisconnect)
                         app->proto.OnDisconnect(event.address, event.fd);
-                break;
+                    break;
+                case EVENT_CONNECT_DELAYED:
+                    if (app->proto.OnConnectDelayed)
+                        app->proto.OnConnectDelayed(event.address, event.fd);
+                    break;
+                case EVENT_RECIEVE_DELAYED:
+                    if (app->proto.OnRecieveDelayed)
+                        app->proto.OnRecieveDelayed(event.address, event.fd, event.data);
+                    delete &event.data;
+                    break;
+                case EVENT_SEND_DELAYED:
+                    if (app->proto.OnSendDelayed)
+                        app->proto.OnSendDelayed(event.data);
+                    delete &event.data;
+                    break;
+                case EVENT_DISCONNECT_DELAYED:
+                    if (app->proto.OnDisconnectDelayed)
+                        app->proto.OnDisconnectDelayed(event.address, event.fd);
+                    break;
+                default:
+                    sLog->outError("Unimplemented EventType:  %d", event.EventType);
             }
             //sLog->outDebug("Process Queue Update after diff: %lu milliseconds", getMsTimeDiffToNow(workBegan));
             queue.pop();

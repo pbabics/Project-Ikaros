@@ -152,12 +152,28 @@ void Application::LoadConfigs()
         LoadStringConfig("Protocol.BindIp", CONFIG_STRING_BIND_IP, "127.0.0.1");
         LoadStringConfig("Protocol.ProtocolName", CONFIG_STRING_PROTOCOL_NAME);
         LoadStringConfig("Protocol.LibraryPath", CONFIG_STRING_LIBRARY_PATH);
+
         LoadStringConfig("Protocol.RecvFunc", CONFIG_STRING_RECV_FUNC);
         LoadStringConfig("Protocol.SendFunc", CONFIG_STRING_SEND_FUNC);
         LoadStringConfig("Protocol.ConnectFunc", CONFIG_STRING_CONNECT_FUNC);
         LoadStringConfig("Protocol.DisconnectFunc", CONFIG_STRING_DISCONNECT_FUNC);
+
         LoadStringConfig("Protocol.LoadFunc", CONFIG_STRING_LOAD_FUNC);
         LoadStringConfig("Protocol.UnloadFunc", CONFIG_STRING_UNLOAD_FUNC);
+
+        LoadStringConfig("Protocol.DelayedRecvFunc", CONFIG_STRING_DELAYED_RECV_FUNC);
+        LoadIntConfig("Protocol.DelayedRecvDelay", CONFIG_INT_DELAYED_RECV_DELAY, 300);
+
+        LoadStringConfig("Protocol.DelayedSendFunc", CONFIG_STRING_DELAYED_SEND_FUNC);
+        LoadIntConfig("Protocol.DelayedSendDelay", CONFIG_INT_DELAYED_SEND_DELAY, 300);
+
+        LoadStringConfig("Protocol.DelayedConnectFunc", CONFIG_STRING_DELAYED_CONNECT_FUNC);
+        LoadIntConfig("Protocol.DelayedConnectDelay", CONFIG_INT_DELAYED_CONNECT_DELAY, 300);
+
+        LoadStringConfig("Protocol.DelayedDisconnectFunc", CONFIG_STRING_DELAYED_DISCONNECT_FUNC);
+        LoadIntConfig("Protocol.DelayedDisconnectDelay", CONFIG_INT_DELAYED_DISCONNECT_DELAY, 300);
+
+
     }
 
     if (RunOptions.size() > 0)
@@ -198,6 +214,16 @@ void Application::outDebugParams() const
     sLog->outString("CONFIG_STRING_SEND_FUNC='%s'", StringConfigs[CONFIG_STRING_SEND_FUNC].c_str());
     sLog->outString("CONFIG_STRING_CONNECT_FUNC='%s'", StringConfigs[CONFIG_STRING_CONNECT_FUNC].c_str());
     sLog->outString("CONFIG_STRING_DISCONNECT_FUNC='%s'", StringConfigs[CONFIG_STRING_DISCONNECT_FUNC].c_str());
+
+    sLog->outString("CONFIG_STRING_DELAYED_RECV_FUNC='%s'", StringConfigs[CONFIG_STRING_DELAYED_RECV_FUNC].c_str());
+    sLog->outString("CONFIG_INT_DELAYED_RECV_DELAY=%d", IntConfigs[CONFIG_INT_DELAYED_RECV_DELAY]);
+    sLog->outString("CONFIG_STRING_DELAYED_SEND_FUNC='%s'", StringConfigs[CONFIG_STRING_DELAYED_SEND_FUNC].c_str());
+    sLog->outString("CONFIG_INT_DELAYED_SEND_DELAY=%d", IntConfigs[CONFIG_INT_DELAYED_SEND_DELAY]);
+    sLog->outString("CONFIG_STRING_DELAYED_CONNECT_FUNC='%s'", StringConfigs[CONFIG_STRING_DELAYED_CONNECT_FUNC].c_str());
+    sLog->outString("CONFIG_INT_DELAYED_CONNECT_DELAY=%d", IntConfigs[CONFIG_INT_DELAYED_CONNECT_DELAY]);
+    sLog->outString("CONFIG_STRING_DELAYED_DISCONNECT_FUNC='%s'", StringConfigs[CONFIG_STRING_DELAYED_DISCONNECT_FUNC].c_str());
+    sLog->outString("CONFIG_INT_DELAYED_DISCONNECT_DELAY=%d", IntConfigs[CONFIG_INT_DELAYED_DISCONNECT_DELAY]);
+
     sLog->outString("CONFIG_STRING_LOAD_FUNC='%s'", StringConfigs[CONFIG_STRING_LOAD_FUNC].c_str());
     sLog->outString("CONFIG_STRING_UNLOAD_FUNC='%s'", StringConfigs[CONFIG_STRING_UNLOAD_FUNC].c_str());
 }
@@ -313,6 +339,8 @@ bool Application::LoadLibrary()
     if (!libLoader->open(StringConfigs[CONFIG_STRING_LIBRARY_PATH].c_str()))
         return libLoaded = false;
 
+//  Normal Event Functions
+
     if (StringConfigs[CONFIG_STRING_SEND_FUNC].length())
         proto.OnSend = onSend(libLoader->findFunc(StringConfigs[CONFIG_STRING_SEND_FUNC].c_str())) ;
 
@@ -324,6 +352,22 @@ bool Application::LoadLibrary()
 
     if (StringConfigs[CONFIG_STRING_DISCONNECT_FUNC].length())
         proto.OnDisconnect = onDisconnect(libLoader->findFunc(StringConfigs[CONFIG_STRING_DISCONNECT_FUNC].c_str()));
+
+//  Delayed Event Functions
+
+    if (StringConfigs[CONFIG_STRING_DELAYED_SEND_FUNC].length())
+        proto.OnSendDelayed = onSend(libLoader->findFunc(StringConfigs[CONFIG_STRING_DELAYED_SEND_FUNC].c_str())) ;
+
+    if (StringConfigs[CONFIG_STRING_DELAYED_RECV_FUNC].length())
+        proto.OnRecieveDelayed = onRecieve(libLoader->findFunc(StringConfigs[CONFIG_STRING_DELAYED_RECV_FUNC].c_str())) ;
+
+    if (StringConfigs[CONFIG_STRING_DELAYED_CONNECT_FUNC].length())
+        proto.OnConnectDelayed = onConnect(libLoader->findFunc(StringConfigs[CONFIG_STRING_DELAYED_CONNECT_FUNC].c_str()));
+
+    if (StringConfigs[CONFIG_STRING_DELAYED_DISCONNECT_FUNC].length())
+        proto.OnDisconnectDelayed = onDisconnect(libLoader->findFunc(StringConfigs[CONFIG_STRING_DELAYED_DISCONNECT_FUNC].c_str()));
+
+//  Load / Unload
 
     if (StringConfigs[CONFIG_STRING_LOAD_FUNC].length())
         proto.OnLoad = onLoad(libLoader->findFunc(StringConfigs[CONFIG_STRING_LOAD_FUNC].c_str()));
@@ -490,8 +534,13 @@ uint32 Application::Update()
             sLog->outDebug("[Recv Thread] Recieved New Connection From: %s FD: %d", inet_ntoa(peer.sin_addr), newSocket);
             if (proto.OnConnect)
             {
-                //handler->AddDelayedEvent(DelayedEvent(EVENT_CONNECT, newSocket, peer.sin_addr, 100));
                 handler->AddEvent(Event(EVENT_CONNECT, newSocket, peer.sin_addr));
+                if (threadMgr->GetThreadStatus(ProcessQueue) == THREAD_SUSPENDED)
+                    sLog->outDebug("[Recv Thread] Resuming Queue thread: %d Status: %s", ProcessQueue, runStatus(threadMgr->ResumeThread(ProcessQueue)));
+            }
+            if (proto.OnConnectDelayed)
+            {
+                handler->AddDelayedEvent(DelayedEvent(EVENT_CONNECT_DELAYED, newSocket, peer.sin_addr, IntConfigs[CONFIG_INT_DELAYED_SEND_DELAY]));
                 if (threadMgr->GetThreadStatus(ProcessQueue) == THREAD_SUSPENDED)
                     sLog->outDebug("[Recv Thread] Resuming Queue thread: %d Status: %s", ProcessQueue, runStatus(threadMgr->ResumeThread(ProcessQueue)));
             }
@@ -517,6 +566,12 @@ uint32 Application::Update()
                             if (threadMgr->GetThreadStatus(ProcessQueue) == THREAD_SUSPENDED)
                                 sLog->outDebug("[Recv Thread] Resuming Queue thread: %d Status: %s", ProcessQueue, runStatus(threadMgr->ResumeThread(ProcessQueue)));
                         }
+                        if (proto.OnDisconnectDelayed)
+                        {
+                            handler->AddDelayedEvent(DelayedEvent(EVENT_DISCONNECT_DELAYED, sock->first, sock->second->GetAddr().sin_addr, IntConfigs[CONFIG_INT_DELAYED_DISCONNECT_DELAY]));
+                            if (threadMgr->GetThreadStatus(ProcessQueue) == THREAD_SUSPENDED)
+                                sLog->outDebug("[Recv Thread] Resuming Queue thread: %d Status: %s", ProcessQueue, runStatus(threadMgr->ResumeThread(ProcessQueue)));
+                        }
                     }
                     else
                         if (recieved > 0)
@@ -524,6 +579,12 @@ uint32 Application::Update()
                             if (proto.OnRecieve)
                             {
                                 handler->AddEvent(Event(EVENT_RECIEVE, sock->first, sock->second->GetAddr().sin_addr, *data, recieved, sock->second->errnum()));
+                                if (threadMgr->GetThreadStatus(ProcessQueue) == THREAD_SUSPENDED)
+                                    sLog->outDebug("[Recv Thread] Resuming Queue thread: %d Status: %s", ProcessQueue, runStatus(threadMgr->ResumeThread(ProcessQueue)));
+                            }
+                            if (proto.OnRecieveDelayed)
+                            {
+                                handler->AddDelayedEvent(DelayedEvent(EVENT_RECIEVE_DELAYED, sock->first, sock->second->GetAddr().sin_addr, IntConfigs[CONFIG_INT_DELAYED_DISCONNECT_DELAY], *data, recieved, sock->second->errnum()));
                                 if (threadMgr->GetThreadStatus(ProcessQueue) == THREAD_SUSPENDED)
                                     sLog->outDebug("[Recv Thread] Resuming Queue thread: %d Status: %s", ProcessQueue, runStatus(threadMgr->ResumeThread(ProcessQueue)));
                             }

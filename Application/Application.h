@@ -30,12 +30,18 @@ typedef std::map<string, string, StringComparsionObject> Options;
 
 struct Protocol
 {
-    onConnect     OnConnect;
-    onRecieve     OnRecieve;
-    onSend         OnSend;
-    onDisconnect       OnDisconnect;
-    onLoad      OnLoad;
-    onUnload    OnUnload;
+    onConnect       OnConnect;
+    onRecieve       OnRecieve;
+    onSend          OnSend;
+    onDisconnect    OnDisconnect;
+
+    onConnect       OnConnectDelayed;
+    onRecieve       OnRecieveDelayed;
+    onSend          OnSendDelayed;
+    onDisconnect    OnDisconnectDelayed;
+
+    onLoad          OnLoad;
+    onUnload        OnUnload;
 };
 
 enum IntOptions
@@ -43,6 +49,10 @@ enum IntOptions
     CONFIG_INT_BIND_PORT,
     CONFIG_INT_LOG_LEVEL,
     CONFIG_INT_FREEZE_DETECTOR_MAX_DIFF,
+    CONFIG_INT_DELAYED_SEND_DELAY,
+    CONFIG_INT_DELAYED_RECV_DELAY,
+    CONFIG_INT_DELAYED_CONNECT_DELAY,
+    CONFIG_INT_DELAYED_DISCONNECT_DELAY,
     CONFIG_INT_MAX
 };
 
@@ -54,9 +64,13 @@ enum StringOptions
     CONFIG_STRING_PROTOCOL_NAME,
     CONFIG_STRING_LIBRARY_PATH,
     CONFIG_STRING_RECV_FUNC,
+    CONFIG_STRING_DELAYED_RECV_FUNC,
     CONFIG_STRING_SEND_FUNC,
+    CONFIG_STRING_DELAYED_SEND_FUNC,
     CONFIG_STRING_CONNECT_FUNC,
+    CONFIG_STRING_DELAYED_CONNECT_FUNC,
     CONFIG_STRING_DISCONNECT_FUNC,
+    CONFIG_STRING_DELAYED_DISCONNECT_FUNC,
     CONFIG_STRING_LOAD_FUNC,
     CONFIG_STRING_UNLOAD_FUNC,
     CONFIG_STRING_MAX
