@@ -399,6 +399,11 @@ void processRecieve(in_addr /* address */, int fd, char* data)
             }
             if (dir.compare("..") == 0)
             {
+                if (session.actualDir.compare("/") == 0)
+                {
+                    FTP::SendSpecialCommandResponse(sock, 200, "'"+ session.actualDir +"' is actual directory.");
+                    break;
+                }
                 if (session.actualDir[session.actualDir.length()-1] == '/')
                     session.actualDir.erase(session.actualDir.length()-1, string::npos);
                 session.actualDir.erase(session.actualDir.find_last_of('/'), string::npos);
