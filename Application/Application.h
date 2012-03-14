@@ -143,6 +143,10 @@ class Application : public Daemon
             inline bool Exiting() const { return terminate; }
             void Terminate();
 
+            bool BoolConfigs[CONFIG_BOOL_MAX];
+            int IntConfigs[CONFIG_INT_MAX];
+            string StringConfigs[CONFIG_STRING_MAX];
+
     protected:
             Options FileOptions;
             Options RunOptions;
@@ -152,10 +156,6 @@ class Application : public Daemon
             bool libLoaded;
             bool terminate;
             int ServerSocket;
-
-            bool BoolConfigs[CONFIG_BOOL_MAX];
-            int IntConfigs[CONFIG_INT_MAX];
-            string StringConfigs[CONFIG_STRING_MAX];
 
             string ApplicationAddress;
 

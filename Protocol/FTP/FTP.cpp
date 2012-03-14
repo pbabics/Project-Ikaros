@@ -332,7 +332,7 @@ void FTP::InitPassiveSock(SessionDataStruct& session)
     bzero(&dest, sizeof(dest));
     dest.sin_family = AF_INET;
     dest.sin_port = 0;
-    dest.sin_addr.s_addr = inet_addr("0.0.0.0");
+    dest.sin_addr.s_addr = inet_addr(app->StringConfigs[CONFIG_STRING_BIND_IP].c_str());
     //Bind
     r = bind(sock, (struct sockaddr*)&dest, sizeof(dest));
     if (r == -1)
