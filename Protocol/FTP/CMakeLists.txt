@@ -9,10 +9,13 @@ include_directories(
 
 add_library(${LibraryName} SHARED Base.cpp)
 
+target_link_libraries(${LibraryName} mysqlclient)
+
 install(TARGETS ${LibraryName} DESTINATION ${InstallDirectory})
 
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${ConfigName}")
     if (NOT EXISTS "${InstallDirectory}${ConfigName}")
         install(FILES  ${ConfigName} DESTINATION ${InstallDirectory})
     endif (NOT EXISTS "${InstallDirectory}${ConfigName}")
+
 endif (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${ConfigName}")

@@ -97,11 +97,11 @@ _diffTime(0)
     _initGlobals();
 
     sLog->outString(" ___    __    ___       __        ______      ___     ________");
-    sLog->outString("|   |  |  |  /  /      /  \\      |   __ \\    /   \\   /   ____/");
-    sLog->outString("|   |  |  |_/  /      / /\\ \\     |  |  | \\  /  /\\ \\  \\  \\____");
-    sLog->outString("|   |  |      /      /  \\/  \\    |  |__| / /  /  \\ \\  \\____  \\");
-    sLog->outString("|   |  |   _  \\     /   __   \\   |      /  \\  \\  / / ___   \\  \\");
-    sLog->outString("|   |  |  | \\  \\   /   /  \\   \\  |  |\\  \\   \\  \\/ /  \\  \\__/  /");
+    sLog->outString("|   |  |  |  /  /      /  \\      |   __ \\    / _ \\   /   ____/");
+    sLog->outString("|   |  |  |_/  /      / /\\ \\     |  |  | \\  / / \\ \\  \\  \\____");
+    sLog->outString("|   |  |      /      /  \\/  \\    |  |__| / / /   \\ \\  \\____  \\");
+    sLog->outString("|   |  |   _  \\     /   __   \\   |      /  \\ \\   / / ___   \\  \\");
+    sLog->outString("|   |  |  | \\  \\   /   /  \\   \\  |  |\\  \\   \\ \\_/ /  \\  \\__/  /");
     sLog->outString("|___|  |__|  \\__\\ /___/    \\___\\ |__| \\__\\   \\___/    \\______/");
     sLog->outString("Project Ikaros - framework based server");
     sLog->outString("Copyright © (2011 - 2012) %s", "Peter  Daemon / NTX Bábics");

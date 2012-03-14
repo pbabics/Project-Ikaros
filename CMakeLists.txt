@@ -67,6 +67,7 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/Sockets/
     ${PROJECT_SOURCE_DIR}/Utilities/
     ${PROJECT_SOURCE_DIR}/Daemon/
+    ${PROJECT_SOURCE_DIR}/MySQL/
     ${CMAKE_BINARY_DIR}
 )
 

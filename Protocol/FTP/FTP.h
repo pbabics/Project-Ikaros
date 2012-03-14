@@ -1,7 +1,7 @@
 #include "Includes.cpp"
 #include "defines.h"
 #include "Utils.h"
-
+#include "Database.cpp"
 #include "ConfigMgr.cpp"
 
 #ifndef __FTP
@@ -69,7 +69,7 @@ struct SessionRecvStruct;
 
 struct SessionDataStruct
 {
-    SessionDataStruct(): username(""), password(""), parentDir("/"), actualDir("/"), 
+    SessionDataStruct(): username(""), password(""), parentDir("/"), actualDir("/"), homeDirectory("."),
       port(20), passiveSock(0), loginPrompted(false), loggedIn(false), isPassive(false), DTPActive(false), abortTranfser(false),
       activeSend(NULL), activeRecv(NULL) { }
 
@@ -77,6 +77,7 @@ struct SessionDataStruct
     string password;
     string parentDir;
     string actualDir;
+    string homeDirectory;
     TransferType transferType;
 
     IP ip;
@@ -128,6 +129,7 @@ std::map<int, SessionDataStruct> sessionData;
 
 SimpleLog* protoLog;
 ConfigMgr* configMgr;
+Database* db;
 
 std::map<int, const char*> responseCodeMessage;
 
@@ -157,12 +159,19 @@ enum BoolConfigs
 {
     CONFIG_BOOL_DEBUG,
     CONFIG_BOOL_CONTROL,
+    CONFIG_BOOL_USE_DB_AUTH,
+    CONFIG_BOOL_ALLOW_GUESTS,
     MAX_BOOL_CONFIGS
 };
 
 enum StringConfigs
 {
     CONFIG_STRING_GREETINGS,
+    CONFIG_STRING_ROOT_DIRECTORY,
+    CONFIG_STRING_DATABASE_HOST,
+    CONFIG_STRING_DATABASE_USERNAME,
+    CONFIG_STRING_DATABASE_PASSWORD,
+    CONFIG_STRING_DATABASE_NAME,
     MAX_CONFIG_STRING
 };
 
