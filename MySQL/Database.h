@@ -52,6 +52,17 @@ class Field
             info = i;
         }
 
+        bool IsNumeric() const { return IS_NUM(info.flags); }
+        bool IsNotNull() const { return info.flags & NOT_NULL_FLAG; }
+        bool IsBlob() const { return IS_BLOB(info.flags); }
+        bool IsUnsigned() const { return info.flags & UNSIGNED_FLAG; }
+        bool IsPrimaryKey() const { return info.flags & PRI_KEY_FLAG; }
+        bool HasDefaultValue() const { return info.flags & NO_DEFAULT_VALUE_FLAG; }
+
+        char* GetFieldName() const { return info.name; }
+        char* GetTableName() const { return info.table; }
+        char* GetDatabaseName() const { return info.db; }
+
     private:
         const char* value;
         MYSQL_FIELD info;
@@ -117,6 +128,14 @@ class Database
         bool SetOption(mysql_option option, T value)
         {
             return mysqL_options(database, option, &value);
+        }
+
+        char* EscapeString(const char* input)
+        {
+            char* ret = new char[strlen(input) * 2 + 1];
+            memset(ret, 0, strlen(input) * 2 + 1);
+            mysql_real_escape_string(database, ret, input, strlen(input));
+            return ret;
         }
 
     private:

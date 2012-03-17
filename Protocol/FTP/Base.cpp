@@ -210,8 +210,7 @@ void processRecieve(in_addr /* address */, int fd, char* data)
         {
             if (!session.loginPrompted)
                 return;
-            string password;
-            dat >> password;
+            string password(strdata.substr(strdata.find_first_of(' '), string::npos));
             if (lower(session.username).compare("anonymous") == 0 && boolConfigs[CONFIG_BOOL_ALLOW_GUESTS])
             {
                 session.loginPrompted = false;
@@ -229,7 +228,7 @@ void processRecieve(in_addr /* address */, int fd, char* data)
             if (boolConfigs[CONFIG_BOOL_USE_DB_AUTH])
             {
                 QueryResult* result = db->PQuery("Select * from users where username = '%s' and password = '%s'", 
-                                                session.username.c_str(), session.password.c_str());
+                                                db->EscapeString(session.username.c_str()), db->EscapeString(session.password.c_str()));
                 if (!result)
                 {
                     session.loginPrompted = false;
