@@ -210,7 +210,7 @@ void processRecieve(in_addr /* address */, int fd, char* data)
         {
             if (!session.loginPrompted)
                 return;
-            string password(strdata.substr(strdata.find_first_of(' '), string::npos));
+            string password(strdata.substr(strdata.find_first_of(' ') + 1, string::npos));
             if (lower(session.username).compare("anonymous") == 0 && boolConfigs[CONFIG_BOOL_ALLOW_GUESTS])
             {
                 session.loginPrompted = false;
