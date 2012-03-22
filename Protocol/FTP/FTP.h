@@ -98,12 +98,13 @@ struct SessionDataStruct
 
 struct SessionSendStruct
 {
-        SessionSendStruct(SessionDataStruct& sdata, Socket* sock, char* data, size_t length): 
-        s(sdata), so(sock), d(data), l(length) {  }
+        SessionSendStruct(SessionDataStruct& sdata, Socket* sock, char* data, size_t length, const char* file = NULL): 
+        s(sdata), so(sock), d(data), f(file), l(length) {  }
 
         SessionDataStruct& s;
         Socket* so;
-        char*   d;
+        char* d;
+        const char* f;
         size_t  l;
 };
 
@@ -145,7 +146,7 @@ class FTP
         static void SendHelloResponse(Socket* sock, std::string);
         static void SendCommandResponse(Socket* sock, int responseCode);
         static void SendSpecialCommandResponse(Socket* sock, int responseCode, string text);
-        static void SendOverDTP(int fd, char* data, size_t dataLength);
+        static void SendOverDTP(int fd, char* data, size_t dataLength, const char* file = NULL);
         static void RecieveOverDTP(int fd, const char* fileName);
         static void InitPassiveSock(SessionDataStruct& session);
 };

@@ -42,8 +42,19 @@ void* SendData(void* args)
     Socket* sock = sendStat->so;
     SessionDataStruct& session = sendStat->s;
     char* data = sendStat->d;
+    const char* fileName = sendStat->f;
     size_t dataLength = sendStat->l;
     FTP::SendCommandResponse(sock, 150);
+
+    bool fileSending = false;
+    Files::BinFile file;
+    if (!data && fileName)
+    {
+        data = new char[intConfigs[CONFIG_INT_MAX_DATA_SEGMENT_SIZE]];
+        file.open(fileName);
+        fileSending = true;
+    }
+
 
     int sendReturn = 0;
     uint64 sleepTime = intConfigs[CONFIG_INT_SEND_WAIT_TIME], errSleepTime = intConfigs[CONFIG_INT_SEND_ERROR_WAIT_TIME];
@@ -69,7 +80,14 @@ void* SendData(void* args)
 
         while (!session.abortTranfser && connection->Connected() && !interrupt)
         {
-            sendReturn = connection->Send(data + sended, dataLength - sended > sendingPart ? sendingPart : dataLength - sended, 0 );
+            if (!fileSending)
+                sendReturn = connection->Send(data + sended, dataLength - sended > sendingPart ? sendingPart : dataLength - sended, 0 );
+            else
+            {
+                memset(data, 0, intConfigs[CONFIG_INT_MAX_DATA_SEGMENT_SIZE]);
+                sendingPart = file.readsome(data, intConfigs[CONFIG_INT_MAX_DATA_SEGMENT_SIZE]);
+                sendReturn = connection->Send(data, sendingPart, 0 );
+            }
             //protoLog->outDebug("Sended:  %d bytes from %lu remaining:  %lu", sendReturn, dataLength, dataLength - sended);
             if (sendReturn == -1)
             {
@@ -116,7 +134,14 @@ void* SendData(void* args)
 
         while (!session.abortTranfser && !interrupt)
         {
-            sendReturn = pSock->Send(data + sended, dataLength - sended > sendingPart ? sendingPart : dataLength - sended, 0 );
+            if (!fileSending)
+                sendReturn = pSock->Send(data + sended, dataLength - sended > sendingPart ? sendingPart : dataLength - sended, 0 );
+            else
+            {
+                memset(data, 0, intConfigs[CONFIG_INT_MAX_DATA_SEGMENT_SIZE]);
+                sendingPart = file.readsome(data, intConfigs[CONFIG_INT_MAX_DATA_SEGMENT_SIZE]);
+                pSock->Send(data, sendingPart, 0 );
+            }
             //protoLog->outDebug("Sended:  %d bytes from %lu remaining:  %lu", sendReturn, dataLength, dataLength - sended);
             if (sendReturn == -1)
             {
@@ -148,6 +173,8 @@ void* SendData(void* args)
         FTP::SendCommandResponse(sock, 426);
     delete data;
     delete sendStat;
+    if (fileSending)
+        file.close();
     session.DTPActive = false;
     session.activeSend = NULL;
     session.abortTranfser = false;
@@ -287,14 +314,14 @@ void* RecvData(void* args)
     return NULL;
 }
 
-void FTP::SendOverDTP(int fd, char* data, size_t dataLength)
+void FTP::SendOverDTP(int fd, char* data, size_t dataLength, const char* file)
 {
-    if (!data)
+    if (!data && !file)
         return;
     SessionDataStruct& session = sessionData[fd];
     Socket* sock = app->socketMgr->GetSocketByFd(fd);
     protoLog->outDebug("Sending %d bytes over DTP to: %s:%d  Mode: %s", dataLength,  session.ip.ToChar(), session.port, session.isPassive? "Passive" : "Active");
-    SessionSendStruct* s = new SessionSendStruct(session, sock, data, dataLength);
+    SessionSendStruct* s = new SessionSendStruct(session, sock, data, dataLength, file);
     session.DTPActive = true;
     session.activeSend = s;
     session.abortTranfser = false;

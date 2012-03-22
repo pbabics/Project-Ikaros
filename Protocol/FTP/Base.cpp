@@ -509,18 +509,15 @@ void processRecieve(in_addr /* address */, int fd, char* data)
                 FTP::SendCommandResponse(sock, 550); // Not Found
                 break;
             }
-            Files::BinFile file;
-            char* tmp = (char*) file.readFile(address);
+            Files::BinFile file(address.c_str());
             if (!file.is_open())
             {
                 FTP::SendCommandResponse(sock, 450); // Not Found 
                 break;
             }
-            char* output =  new char[file.getLength() + 1];
-            memset(output, 0, file.getLength()+1);
-            memcpy(output, tmp, file.getLength());
             protoLog->outDebug("Sending Requested file:  %s  length: %lu", address.c_str(), file.getLength());
-            FTP::SendOverDTP(fd, output, file.getLength());
+            FTP::SendOverDTP(fd, NULL, file.getLength(), address.c_str());
+            file.close();
             break;
         }
         case FTP_HELP:
