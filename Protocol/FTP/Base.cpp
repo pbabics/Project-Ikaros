@@ -341,9 +341,10 @@ void processRecieve(in_addr /* address */, int fd, char* data)
             FTP::InitPassiveSock(session);
             protoLog->outDebug("Session %s IP:  %s  Port:  %hu", session.isPassive? "Passive" : "Active", session.ip.ToChar(), session.port);
             stringstream response;
-            response << "Entering passive mode.";
+            response << "Entering passive mode (";
             response << int(session.ip[0]) << ',' << int(session.ip[1]) << ',' << int(session.ip[2]) << ',' << int(session.ip[3]) << ',';
             response << int(session.port / 256) << ',' << int(session.port % 256);
+            response << ").";
             FTP::SendSpecialCommandResponse(sock, 227, response.str().c_str());
             break;
         }

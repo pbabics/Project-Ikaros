@@ -107,6 +107,8 @@ struct SessionSendStruct
 		        memset(f, 0, strlen(file)+1);
 		        memcpy(f, file, strlen(file));
 	        }
+            else
+                f = NULL;
 	    }
 
         SessionDataStruct& s;
