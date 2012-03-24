@@ -140,7 +140,7 @@ void* SendData(void* args)
             {
                 memset(data, 0, intConfigs[CONFIG_INT_MAX_DATA_SEGMENT_SIZE]);
                 sendingPart = file.readsome(data, intConfigs[CONFIG_INT_MAX_DATA_SEGMENT_SIZE]);
-                pSock->Send(data, sendingPart, 0 );
+                sendReturn = pSock->Send(data, sendingPart, 0 );
             }
             //protoLog->outDebug("Sended:  %d bytes from %lu remaining:  %lu", sendReturn, dataLength, dataLength - sended);
             if (sendReturn == -1)
@@ -171,6 +171,8 @@ void* SendData(void* args)
         FTP::SendCommandResponse(sock, 226);
     if (session.abortTranfser)
         FTP::SendCommandResponse(sock, 426);
+    if (fileName)
+        delete fileName;
     delete data;
     delete sendStat;
     if (fileSending)
@@ -178,8 +180,22 @@ void* SendData(void* args)
     session.DTPActive = false;
     session.activeSend = NULL;
     session.abortTranfser = false;
-    protoLog->outDebug("SendData End session: %s", session.DTPActive? "Data Tranfsering": "Data Tranfser Completed" );
+    protoLog->outDebug("SendData End session: %s  Sent:  %lu bytes", session.DTPActive? "Data Tranfsering": "Data Tranfser Completed", sended );
     return NULL;
+}
+
+void FTP::SendOverDTP(int fd, char* data, size_t dataLength, const char* file)
+{
+    if (!data && !file)
+        return;
+    SessionDataStruct& session = sessionData[fd];
+    Socket* sock = app->socketMgr->GetSocketByFd(fd);
+    protoLog->outDebug("Sending %d bytes over DTP to: %s:%d  Mode: %s", dataLength,  session.ip.ToChar(), session.port, session.isPassive? "Passive" : "Active");
+    SessionSendStruct* s = new SessionSendStruct(session, sock, data, dataLength, file);
+    session.DTPActive = true;
+    session.activeSend = s;
+    session.abortTranfser = false;
+    Thread::CreateThread(&SendData, (void*) s);
 }
 
 void* RecvData(void* args)
@@ -312,20 +328,6 @@ void* RecvData(void* args)
     session.abortTranfser = false;
     protoLog->outDebug("RecvData End session: %s", session.DTPActive? "Data Tranfsering": "Data Tranfser Completed" );
     return NULL;
-}
-
-void FTP::SendOverDTP(int fd, char* data, size_t dataLength, const char* file)
-{
-    if (!data && !file)
-        return;
-    SessionDataStruct& session = sessionData[fd];
-    Socket* sock = app->socketMgr->GetSocketByFd(fd);
-    protoLog->outDebug("Sending %d bytes over DTP to: %s:%d  Mode: %s", dataLength,  session.ip.ToChar(), session.port, session.isPassive? "Passive" : "Active");
-    SessionSendStruct* s = new SessionSendStruct(session, sock, data, dataLength, file);
-    session.DTPActive = true;
-    session.activeSend = s;
-    session.abortTranfser = false;
-    Thread::CreateThread(&SendData, (void*) s);
 }
 
 void FTP::RecieveOverDTP(int fd, const char* fileName)

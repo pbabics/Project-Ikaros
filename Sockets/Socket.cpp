@@ -77,7 +77,7 @@ int Socket::Recieve(BinnaryData &data, int flags)
 bool _isIPv4(char* ip)
 {
     int Byte[4];
-    short pos[5]={-1, 0 ,0, 0, 0};
+    short pos[5]= {-1, 0 ,0, 0, 0};
     if (strlen(ip) - 1 < 7)
         return false;
     if (strlen(ip) - 1 > 15)

@@ -99,12 +99,20 @@ struct SessionDataStruct
 struct SessionSendStruct
 {
         SessionSendStruct(SessionDataStruct& sdata, Socket* sock, char* data, size_t length, const char* file = NULL): 
-        s(sdata), so(sock), d(data), f(file), l(length) {  }
+        s(sdata), so(sock), d(data), l(length) 
+	    { 
+	        if (file)
+	        {
+		        f = new char[strlen(file)+1];
+		        memset(f, 0, strlen(file)+1);
+		        memcpy(f, file, strlen(file));
+	        }
+	    }
 
         SessionDataStruct& s;
         Socket* so;
         char* d;
-        const char* f;
+        char* f;
         size_t  l;
 };
 
