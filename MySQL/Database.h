@@ -18,12 +18,11 @@ class Database;
 class MySQLDriver
 {
     public:
-        MySQLDriver(int argc = 0, char **argv = NULL, char **groups = NULL) { mysql_library_init(argc, argv, groups); }
-        ~MySQLDriver() { mysql_library_end(); }
-
-        uint32 GetClientVersion() { return mysql_get_client_version(); }
-        const char* GetClientInfo() { return mysql_get_client_info(); }
-} driver;
+        static uint32 GetClientVersion() { return mysql_get_client_version(); }
+        static const char* GetClientInfo() { return mysql_get_client_info(); }
+        static void Init(int argc = 0, char **argv = NULL, char **groups = NULL) { mysql_library_init(argc, argv, groups); }
+        static void End() { mysql_library_end(); }
+};
 
 
 class Field

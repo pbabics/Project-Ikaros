@@ -9,3 +9,5 @@ include_directories(
 
 add_library(${LibraryName} SHARED libdump.cpp)
 install(TARGETS ${LibraryName} DESTINATION ${InstallDirectory})
+
+message("->  libDummp prepared")

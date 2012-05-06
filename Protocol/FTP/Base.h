@@ -13,7 +13,7 @@ void processRecieve(in_addr /* address */, int fd, char* data);
 void processConnect(in_addr /* address */, int fd);
 void processDisconnect(in_addr /* address */, int fd);
 void Init();
-
+void DeInit();
 
 
 #ifdef __cplusplus

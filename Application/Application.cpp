@@ -467,7 +467,7 @@ void Application::Terminate()
 uint32 Application::Update()
 {
     LoadLibrary();
-    if (libLoader->getError())
+    if (!libLoaded || libLoader->getError())
     {
         sLog->outError("Library Loader Returned Error: %s", libLoader->getError());
         return -1;
@@ -496,7 +496,8 @@ uint32 Application::Update()
     gettimeofday(&_lastUpdate, 0);
 
     int ProcessQueue = threadMgr->CreateThread("Queue", &CallProcessQueue, handler);
-    freezeDetector->Run();
+    if (freezeDetector)
+        freezeDetector->Run();
     if (ProcessQueue == -1)
     {
         sLog->outError("[Recv Thread] Executing Packet Handling Queue Failed errno: %d",errno);
@@ -548,7 +549,7 @@ uint32 Application::Update()
         }
 
         if (r > 0)
-            for (ConnectionMgr::SocketMap::iterator sock = socketMgr->sockets.begin(); sock != socketMgr->sockets.end() && r; sock++)
+            for (ConnectionMgr::SocketMap::iterator sock = socketMgr->sockets.begin(); sock != socketMgr->sockets.end() && r; ++sock)
                 if (FD_ISSET(sock->second->GetFD(), &test))
                 {
                     BinnaryData* data = new BinnaryData();

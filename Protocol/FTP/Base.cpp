@@ -16,6 +16,7 @@ void LoadConfigs();
 
 void Init()
 {
+    MySQLDriver::Init();
     configMgr = new ConfigMgr("ftp.conf", NULL, 0);
     protoLog = new SimpleLog(boolConfigs[CONFIG_BOOL_CONTROL], boolConfigs[CONFIG_BOOL_DEBUG], "Protocol.log");
     db = new Database();
@@ -35,6 +36,11 @@ void Init()
             app->Terminate();
         }
     }
+}
+
+void DeInit()
+{
+    MySQLDriver::End();
 }
 
 void InitMessages()

@@ -97,6 +97,8 @@ set (STAT_CORE
 
 set (STAT_MAIN main.cpp)
 
+message("")
+message("***** Preparing Core *****")
 
 add_library(Core STATIC ${STAT_CORE})
 target_link_libraries(Core ${CMAKE_DL_LIBS} Core)
@@ -107,6 +109,8 @@ add_executable(MultiServer ${STAT_MAIN})
 
 set_target_properties(MultiServer PROPERTIES LINK_FLAGS ${MultiServer_LINK_FLAGS})
 target_link_libraries(MultiServer ${CMAKE_DL_LIBS} Core)
+
+message("->  Core prepared")
 
 if (Protocols)
     add_subdirectory(Protocol)

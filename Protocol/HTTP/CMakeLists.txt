@@ -15,3 +15,5 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${ConfigName}")
         install(FILES  ${ConfigName} DESTINATION ${InstallDirectory})
     endif (NOT EXISTS "${InstallDirectory}${ConfigName}")
 endif (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${ConfigName}")
+
+message("->  HTTP protocol prepared")
