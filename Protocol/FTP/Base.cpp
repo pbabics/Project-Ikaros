@@ -26,9 +26,9 @@ void Init()
 
     if (boolConfigs[CONFIG_BOOL_USE_DB_AUTH])
     {
-        db->Connect(stringConfigs[CONFIG_STRING_DATABASE_HOST].c_str(), 
-                    stringConfigs[CONFIG_STRING_DATABASE_USERNAME].c_str(), 
-                    stringConfigs[CONFIG_STRING_DATABASE_PASSWORD].c_str(),  
+        db->Connect(stringConfigs[CONFIG_STRING_DATABASE_HOST].c_str(),
+                    stringConfigs[CONFIG_STRING_DATABASE_USERNAME].c_str(),
+                    stringConfigs[CONFIG_STRING_DATABASE_PASSWORD].c_str(),
                     stringConfigs[CONFIG_STRING_DATABASE_NAME].c_str());
         if (!db->IsConnected())
         {
@@ -233,7 +233,7 @@ void processRecieve(in_addr /* address */, int fd, char* data)
             session.password = password;
             if (boolConfigs[CONFIG_BOOL_USE_DB_AUTH])
             {
-                QueryResult* result = db->PQuery("Select * from users where username = '%s' and password = '%s'", 
+                QueryResult* result = db->PQuery("Select * from users where username = '%s' and password = '%s'",
                                                 db->EscapeString(session.username.c_str()), db->EscapeString(session.password.c_str()));
                 if (!result)
                 {
@@ -313,7 +313,7 @@ void processRecieve(in_addr /* address */, int fd, char* data)
             for (uint8 i = 0; i < 4; i++)
                 session.ip[i] = a[i];
             session.ip.Restore();
-            //protoLog->outDebug("IP Struct:  %s  %d %d %d %d   0x%08x  0x%08x", 
+            //protoLog->outDebug("IP Struct:  %s  %d %d %d %d   0x%08x  0x%08x",
             //session.ip.ToChar(), session.ip[0], session.ip[1],session.ip[2],session.ip[3], *(int*)(&session.ip.ipB), *(int*)(&session.ip.ipI.s_addr));
             session.port = a[4] * 256 + a[5];
             session.isPassive = false;
@@ -519,7 +519,7 @@ void processRecieve(in_addr /* address */, int fd, char* data)
             Files::BinFile file(address.c_str());
             if (!file.is_open())
             {
-                FTP::SendCommandResponse(sock, 450); // Not Found 
+                FTP::SendCommandResponse(sock, 450); // Not Found
                 break;
             }
             protoLog->outDebug("Sending Requested file:  %s  length: %lu", address.c_str(), file.getLength());

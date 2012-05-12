@@ -15,22 +15,22 @@ Thread* Thread::CreateThread(CalledFunction func, void *args)
 
 int Thread::Kill() const
 {
-    return pthread_kill(thread, SIGKILL); 
+    return pthread_kill(thread, SIGKILL);
 }
 
 int Thread::Terminate() const
 {
-    return pthread_kill(thread, SIGTERM); 
+    return pthread_kill(thread, SIGTERM);
 }
 
 int Thread::Interrupt() const
 {
-    return pthread_kill(thread, SIGINT); 
+    return pthread_kill(thread, SIGINT);
 }
 
 int Thread::Continue() const
 {
-    return pthread_kill(thread, SIGCONT); 
+    return pthread_kill(thread, SIGCONT);
 }
 
 int Thread::SendSignal(int sig)

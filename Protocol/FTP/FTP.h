@@ -98,18 +98,18 @@ struct SessionDataStruct
 
 struct SessionSendStruct
 {
-        SessionSendStruct(SessionDataStruct& sdata, Socket* sock, char* data, size_t length, const char* file = NULL): 
-        s(sdata), so(sock), d(data), l(length) 
-	    { 
-	        if (file)
-	        {
-		        f = new char[strlen(file)+1];
-		        memset(f, 0, strlen(file)+1);
-		        memcpy(f, file, strlen(file));
-	        }
+        SessionSendStruct(SessionDataStruct& sdata, Socket* sock, char* data, size_t length, const char* file = NULL):
+        s(sdata), so(sock), d(data), l(length)
+        {
+            if (file)
+            {
+                f = new char[strlen(file)+1];
+                memset(f, 0, strlen(file)+1);
+                memcpy(f, file, strlen(file));
+            }
             else
                 f = NULL;
-	    }
+        }
 
         SessionDataStruct& s;
         Socket* so;
@@ -120,7 +120,7 @@ struct SessionSendStruct
 
 struct SessionRecvStruct
 {
-        SessionRecvStruct(SessionDataStruct& sdata, Socket* sock, const char* fileName): 
+        SessionRecvStruct(SessionDataStruct& sdata, Socket* sock, const char* fileName):
         s(sdata), so(sock), f(new char[strlen(fileName) + 1])
         {
             char* fi = new char[strlen(fileName) + 1];
@@ -145,7 +145,7 @@ Database* db;
 std::map<int, const char*> responseCodeMessage;
 
 #ifdef __cplusplus
-extern "C" 
+extern "C"
 {
 #endif
 

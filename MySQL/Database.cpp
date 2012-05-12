@@ -10,7 +10,7 @@ const char* DuplicateString(const char* _a)
     return const_cast<const char*>(b);
 }
 
-Database::Database(): 
+Database::Database():
 connected(false), _host(NULL), _user(NULL), _db(NULL), _port(0), _unix_socket(NULL), _client_flag(0)
 {
     database = mysql_init(NULL);
@@ -97,14 +97,14 @@ bool Database::PExecute(const char* stmt, ...) const
 QueryResult::QueryResult(MYSQL_RES* result, MYSQL_ROW row, MYSQL_FIELD* fields):
 _result(result), _fields(fields)
 {
-    num_rows = mysql_num_rows(_result); 
-    num_fields = mysql_num_fields(_result); 
+    num_rows = mysql_num_rows(_result);
+    num_fields = mysql_num_fields(_result);
     _currentRow = new Field[num_fields];
     _currentRowId = 0;
     FillFields(row, fields);
 }
 
-QueryResult::~QueryResult() 
+QueryResult::~QueryResult()
 {
     if (_result)
     {

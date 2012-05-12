@@ -137,7 +137,7 @@ void processRecieve(in_addr /* address */, int fd, char* data)
             }
             break;
         }
-        
+
         case SMTP_QUIT: // Client quit
             app->socketMgr->CloseSocketByFd(fd);
         break;

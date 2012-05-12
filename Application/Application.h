@@ -119,7 +119,7 @@ class Runnable
 class FreezeDetector : public Runnable
 {
     public:
-        FreezeDetector(uint64 maxDiffTime, uint64& diff): 
+        FreezeDetector(uint64 maxDiffTime, uint64& diff):
         _maxDiffTime(maxDiffTime), _diff(diff), _exit(false), _pause(false), _active(false) { }
 
         void Run();

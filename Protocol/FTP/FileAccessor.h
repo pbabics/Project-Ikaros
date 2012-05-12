@@ -44,7 +44,7 @@ DirectoryEntryInfo const* GetFileInfo(char* fileName)
 class DirectoryInfo : public DirectoryEntryInfo
 {
     public:
-        DirectoryInfo(char* _directoryName, struct stat _dirStat): 
+        DirectoryInfo(char* _directoryName, struct stat _dirStat):
         DirectoryEntryInfo(_directoryName, _dirStat), dir(NULL), isDir(true), err(0) { }
 
         char* GetDirectoryName() const { return entryName; }
@@ -89,7 +89,7 @@ class TerminalFuction // Used for manipulation output of applications ran from t
     public:
         TerminalFuction(string _program, string _args): program(_program), args(_args) { }
         int Run() const { return system((program + " " + args).c_str()); }
-        char* RunWithCallback(int* returnValue = NULL) const 
+        char* RunWithCallback(int* returnValue = NULL) const
         {
             int ret = 0;
             stringstream call;

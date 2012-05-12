@@ -12,7 +12,7 @@ SimpleLog* protoLog;
 ConfigMgr* configMgr;
 
 #ifdef __cplusplus
-extern "C" 
+extern "C"
 {
 #endif
 

@@ -96,7 +96,7 @@ void LoadConfig()
     intConfigs[CONFIG_INT_MAX_MAIN_THREAD_FILE_SIZE] = configMgr->LoadIntConfig("MaximalMainThreadFileSize", 40000);
     if (intConfigs[CONFIG_INT_MAX_MAIN_THREAD_FILE_SIZE] <= 0)
     {
-        protoLog->outError("MaximalMainThreadFileSize must be > 0 (configured value: %d) setting back to default 40000", 
+        protoLog->outError("MaximalMainThreadFileSize must be > 0 (configured value: %d) setting back to default 40000",
         intConfigs[CONFIG_INT_MAX_MAIN_THREAD_FILE_SIZE]);
         intConfigs[CONFIG_INT_MAX_MAIN_THREAD_FILE_SIZE] = 40000;
     }

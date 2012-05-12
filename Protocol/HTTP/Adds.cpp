@@ -48,7 +48,7 @@ bool isWithinRootDir(string file)
 
         if (!test.compare("..")/* == 0*/)
             deep--;
-        else 
+        else
             deep++;
         file = file.substr(file.find('/'), string::npos);
     }

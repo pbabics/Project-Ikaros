@@ -34,7 +34,7 @@ void FreezeDetector::Run()
 }
 
 Application::Application(int argc, char* argv[], const char *conf):
-debug(false), control(false), daemonize(false), libLoaded(false), terminate(false), 
+debug(false), control(false), daemonize(false), libLoaded(false), terminate(false),
 _diffTime(0)
 {
     gettimeofday(&_lastUpdate, 0);
