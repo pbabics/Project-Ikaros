@@ -1,15 +1,13 @@
-#include <pthread.h>
 #include <list>
 #include <map>
 #include <cstring>
 #include <string>
 #include <cstdio>
-#include <signal.h>
 
-#include "Defs.h"
+#include "Thread.h"
 
-#ifndef __Threads
-#define __Threads
+#ifndef __ThreadMgr
+#define __ThreadMgr
 
 using std::string;
 using std::map;
@@ -30,80 +28,7 @@ struct compStr
 typedef std::map<string, pthread_mutex_t&, compStr> MutexMap ;
 typedef std::map<string, pthread_cond_t&, compStr> ConditionMap ;
 typedef std::map<string, uint32, compStr> ThreadNameMap;
-typedef void* (*CalledFunction)(void*);
 
-enum ThreadStatus
-{
-    THREAD_STATUS_BEGIN = 1,
-    THREAD_ACTIVE,
-    THREAD_SUSPENDED,
-    THREAD_EXIT,
-    THREAD_STATUS_END
-};
-
-struct Thread
-{
-    Thread(): id(0), status(0), attributes(0) { }
-    pthread_t thread;
-    uint32  id;
-    int status;
-    uint32 attributes;
-    CalledFunction function;
-    void* args;
-
-    static Thread* CreateThread(void* (*func)(void*), void* args);
-    operator pthread_t() { return thread; }
-    operator int() { return id; }
-
-    int Kill() const
-    {
-        return pthread_kill(thread, SIGKILL); 
-    }
-
-    int Terminate() const
-    {
-        return pthread_kill(thread, SIGTERM); 
-    }
-
-    int Interrupt() const
-    {
-        return pthread_kill(thread, SIGINT); 
-    }
-
-    int Continue() const
-    {
-        return pthread_kill(thread, SIGCONT); 
-    }
-
-    int SendSignal(int sig)
-    {
-        return pthread_kill(thread, sig);
-    }
-
-    void Suspend()
-    {
-        sigset_t suspendSig;
-        int sig = SIGCONT;
-        sigemptyset(&suspendSig);
-        sigaddset(&suspendSig, SIGCONT);
-        sigaddset(&suspendSig, SIGINT);
-        sigaddset(&suspendSig, SIGTERM);
-        status = THREAD_SUSPENDED;
-        sigwait(&suspendSig, &sig);
-        status = THREAD_ACTIVE;
-    }
-
-    static void SuspendThisThread()
-    {
-        sigset_t suspendSig;
-        int sig = SIGCONT;
-        sigemptyset(&suspendSig);
-        sigaddset(&suspendSig, SIGCONT);
-        sigaddset(&suspendSig, SIGINT);
-        sigaddset(&suspendSig, SIGTERM);
-        sigwait(&suspendSig, &sig);
-    }
-};
 
 class ThreadMgr
 {
@@ -192,9 +117,4 @@ class ThreadMgr
         ThreadNameMap pThreadNames;
 };
 
-
-inline pthread_t GetThisThread()
-{
-    return pthread_self();
-}
-#endif
+#endif // __ThreadMgr

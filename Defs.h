@@ -10,7 +10,7 @@ typedef int int32 ;
 typedef short int16 ;
 typedef char int8 ;
 
-typedef void (*handleFunc)(char*, int);// Used for opcode Handlers
+typedef void* (*CalledFunction)(void*);
 
 #define IN_KILOBYTES 1024
 #define IN_MEGABYTES IN_KILOBYTES * IN_KILOBYTES

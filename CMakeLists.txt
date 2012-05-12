@@ -88,6 +88,7 @@ set (STAT_CORE
     Signal/SignalHandler.cpp
     Sockets/Socket.cpp
     Sockets/SocketMgr.cpp
+    Threads/Thread.cpp
     Threads/ThreadMgr.cpp
     ConfigMgr/ConfigMgr.cpp
     Handling/Handler.cpp

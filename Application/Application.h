@@ -93,20 +93,38 @@ extern SimpleLog* sLog;
 
 void* CallFreezeDetector(void* obj);
 
-class FreezeDetector
+class Runnable
 {
-    friend void* CallFreezeDetector(void* obj);
+    friend void* CallRunnable(void* obj);
 
     public:
+        Runnable(): _thread(NULL) { }
+
+        virtual void Run() { }
+
+        void Kill() { if (_thread) _thread->Kill(); }
+        void Suspend() { if (_thread) _thread->Suspend(); }
+        void Terminate() { if (_thread) _thread->Terminate(); }
+        void Continue() { if (_thread) _thread->Continue(); }
+
+        void Execute();
+
+        int GetStatus() const { if (_thread) return _thread->status; return 0; }
+        Thread* GetThread() { return _thread; }
+
+    protected:
+        Thread* _thread;
+};
+
+class FreezeDetector : public Runnable
+{
+    public:
         FreezeDetector(uint64 maxDiffTime, uint64& diff): 
-        _maxDiffTime(maxDiffTime), _diff(diff), _exit(false), _pause(false), _active(false), _detectorThread(NULL) { }
+        _maxDiffTime(maxDiffTime), _diff(diff), _exit(false), _pause(false), _active(false) { }
 
         void Run();
         void Exit() { _exit = true; }
         void Pause()  { _pause = true; }
-        void Continue() { if (_detectorThread) _detectorThread->Continue(); }
-
-        int GetStatus() const { if (_detectorThread) return _detectorThread->status; return 0; }
 
     private:
         uint64 _maxDiffTime;
@@ -114,8 +132,6 @@ class FreezeDetector
         bool _exit;
         bool _pause;
         bool _active;
-        void* _process(void*);
-        Thread* _detectorThread;
 };
 
 

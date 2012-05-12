@@ -1,20 +1,20 @@
 #include "Application.h"
 
-void* CallFreezeDetector(void* obj)
+void* CallRunnable(void* obj)
 {
-    ((FreezeDetector*)obj)->_process(NULL);
+    reinterpret_cast<Runnable*>(obj)->Run();
     return NULL;
+}
+
+void Runnable::Execute()
+{
+    _thread = Thread::CreateThread(CallRunnable, this);
 }
 
 void FreezeDetector::Run()
 {
-    _detectorThread = Thread::CreateThread(CallFreezeDetector, this);
-}
-
-void* FreezeDetector::_process(void*)
-{
     _active = true;
-    _detectorThread->status = THREAD_ACTIVE;
+    _thread->status = THREAD_ACTIVE;
     while (!_exit)
     {
         if (_maxDiffTime < _diff)
@@ -29,9 +29,8 @@ void* FreezeDetector::_process(void*)
         }
         usleep(_maxDiffTime - _diff);
     }
-    _detectorThread->status = THREAD_EXIT;
+    _thread->status = THREAD_EXIT;
     _active = false;
-    return NULL;
 }
 
 Application::Application(int argc, char* argv[], const char *conf):
@@ -500,7 +499,7 @@ uint32 Application::Update()
 
     int ProcessQueue = threadMgr->CreateThread("Queue", &CallProcessQueue, handler);
     if (BoolConfigs[CONFIG_BOOL_ENABLE_FREEZE_DETECTOR])
-        freezeDetector->Run();
+        freezeDetector->Execute();
     if (ProcessQueue == -1)
     {
         sLog->outError("[Recv Thread] Executing Packet Handling Queue Failed Error(%d): %s", errno, strerror(errno));
@@ -616,8 +615,8 @@ uint32 Application::Update()
 
     libLoader->close();
     socketMgr->CloseAllSockets();
-    freezeDetector->Exit();
     close(ServerSocket);
+    threadMgr->JoinThead(ProcessQueue, NULL);
     threadMgr->JoinThead(ProcessQueue, NULL);
     sLog->outControl("[Main Process]  Exiting Application");
     return 1;

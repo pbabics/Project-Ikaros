@@ -1,22 +1,6 @@
 #include "ThreadMgr.h"
 
-
-Thread* Thread::CreateThread(void * (*func)(void *), void *args)
-{
-    Thread* n = new Thread();
-    if (pthread_create(&n->thread, NULL, func, args) == 0)
-    {
-        n->status = THREAD_ACTIVE;
-        n->function = func;
-        n->args = args;
-        return n ;
-    }
-    return NULL ;
-}
-
-
-
-int ThreadMgr::CreateThread(void * (*func)(void *), void *args)
+int ThreadMgr::CreateThread(CalledFunction func, void *args)
 {
     Thread n;
     if (pthread_create(&n.thread, NULL, func, args) == 0)
@@ -29,7 +13,7 @@ int ThreadMgr::CreateThread(void * (*func)(void *), void *args)
     return -1 ;
 }
 
-int ThreadMgr::CreateThread(string ThreadName, void * (*func)(void *), void *args)
+int ThreadMgr::CreateThread(string ThreadName, CalledFunction func, void *args)
 {
     if (pThreadNames.find(ThreadName) != pThreadNames.end())
         return -1;
@@ -57,7 +41,7 @@ bool ThreadMgr::CancelThread(string ThreadName)
     return CancelThread(GetThreadIdByName(ThreadName));
 }
 
-bool ThreadMgr::JoinThead(uint32 threadId,void** retval)
+bool ThreadMgr::JoinThead(uint32 threadId, void** retval)
 {
     if (threadId < pThreads.size())
         if (pthread_join(getThread(threadId), retval) == 0)
@@ -65,7 +49,7 @@ bool ThreadMgr::JoinThead(uint32 threadId,void** retval)
     return false;
 }
 
-bool ThreadMgr::JoinThead(string ThreadName,void** retval)
+bool ThreadMgr::JoinThead(string ThreadName, void** retval)
 {
     return JoinThead(GetThreadIdByName(ThreadName), retval);
 }
@@ -176,6 +160,7 @@ void ThreadMgr::SetThreadStatus(uint32 ThreadId, int Status)
 /*                              */
 /*          Mutexes             */
 /*                              */
+
 int ThreadMgr::CreateMutex(std::string MutexName, const pthread_mutexattr_t * Attr)
 {
     if (pMutexes.find(MutexName) != pMutexes.end())
