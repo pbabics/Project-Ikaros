@@ -80,12 +80,10 @@ void PacketHandler::ProcessQueue()
         {
             //sLog->outDebug("Process Queue goes to sleep (until data arrives)");
             app->threadMgr->SetThreadStatus(GetThisThread(), THREAD_SUSPENDED);
-            if (app->freezeDetector)
-                app->freezeDetector->Pause();
+            app->freezeDetector->Pause();
             Thread::SuspendThisThread();
             app->threadMgr->SetThreadStatus(GetThisThread(), THREAD_ACTIVE);
-            if (app->freezeDetector)
-                app->freezeDetector->Continue();
+            app->freezeDetector->Continue();
             //sLog->outDebug("Process Queue was suspended %lu milliseconds", getMsTimeDiffToNow(workBegan));
         }
         gettimeofday(&workBegan, 0);

@@ -60,6 +60,8 @@ _diffTime(0)
                 value = string("1");
             }
             RunOptions.insert(make_pair(property, value));
+            if (property == "d")
+                conf = value.c_str();
         }
     }
 
@@ -188,59 +190,59 @@ void Application::outDebugParams() const
 {
     if (isDaemon())
     {
-        sLog->outString("****** Runnig as Daemon ******");
-        sLog->outString("Process Id:  %d  Parent Process Id: %d  Process Group Id: %d",
+        sLog->outControl("****** Runnig as Daemon ******");
+        sLog->outControl("Process Id:  %d  Parent Process Id: %d  Process Group Id: %d",
         GetProcessId(), GetParentProcessId(), GetCurrentProcessGroupId());
-        sLog->outString("Working Directory %s", GetWorkingDirectory());
-        sLog->outString();
+        sLog->outControl("Working Directory %s", GetWorkingDirectory());
+        sLog->outControl();
     }
 
-    sLog->outString("CONFIG_BOOL_DAEMONIZE=%s", toString(BoolConfigs[CONFIG_BOOL_DAEMONIZE]));
-    sLog->outString("CONFIG_STRING_PID_FILE='%s'", StringConfigs[CONFIG_STRING_PID_FILE].c_str());
-    sLog->outString("CONFIG_STRING_WORKING_DIRECTORY='%s'", StringConfigs[CONFIG_STRING_WORKING_DIRECTORY].c_str());
-    sLog->outString("CONFIG_BOOL_LOG=%s", toString(BoolConfigs[CONFIG_BOOL_LOG]));
-    sLog->outString("CONFIG_INT_LOG_LEVEL=%d", IntConfigs[CONFIG_INT_LOG_LEVEL]);
-    sLog->outString("CONFIG_BOOL_ENABLE_FREEZE_DETECTOR=%s", toString(BoolConfigs[CONFIG_BOOL_ENABLE_FREEZE_DETECTOR]));
-    sLog->outString("CONFIG_INT_FREEZE_DETECTOR_MAX_DIFF=%d", IntConfigs[CONFIG_INT_FREEZE_DETECTOR_MAX_DIFF]);
+    sLog->outDebug("CONFIG_BOOL_DAEMONIZE=%s", toString(BoolConfigs[CONFIG_BOOL_DAEMONIZE]));
+    sLog->outDebug("CONFIG_STRING_PID_FILE='%s'", StringConfigs[CONFIG_STRING_PID_FILE].c_str());
+    sLog->outDebug("CONFIG_STRING_WORKING_DIRECTORY='%s'", StringConfigs[CONFIG_STRING_WORKING_DIRECTORY].c_str());
+    sLog->outDebug("CONFIG_BOOL_LOG=%s", toString(BoolConfigs[CONFIG_BOOL_LOG]));
+    sLog->outDebug("CONFIG_INT_LOG_LEVEL=%d", IntConfigs[CONFIG_INT_LOG_LEVEL]);
+    sLog->outDebug("CONFIG_BOOL_ENABLE_FREEZE_DETECTOR=%s", toString(BoolConfigs[CONFIG_BOOL_ENABLE_FREEZE_DETECTOR]));
+    sLog->outDebug("CONFIG_INT_FREEZE_DETECTOR_MAX_DIFF=%d", IntConfigs[CONFIG_INT_FREEZE_DETECTOR_MAX_DIFF]);
 
-    sLog->outString("Control=%s", toString(control));
-    sLog->outString("Debug=%s", toString(debug));
-    sLog->outString();
-    sLog->outString("CONFIG_INT_BIND_PORT=%d", IntConfigs[CONFIG_INT_BIND_PORT]);
-    sLog->outString("CONFIG_STRING_BIND_IP='%s'", StringConfigs[CONFIG_STRING_BIND_IP].c_str());
-    sLog->outString("CONFIG_STRING_PROTOCOL_NAME='%s'", StringConfigs[CONFIG_STRING_PROTOCOL_NAME].c_str());
-    sLog->outString("CONFIG_STRING_LIBRARY_PATH='%s'", StringConfigs[CONFIG_STRING_LIBRARY_PATH].c_str());
-    sLog->outString("CONFIG_STRING_RECV_FUNC='%s'", StringConfigs[CONFIG_STRING_RECV_FUNC].c_str());
-    sLog->outString("CONFIG_STRING_SEND_FUNC='%s'", StringConfigs[CONFIG_STRING_SEND_FUNC].c_str());
-    sLog->outString("CONFIG_STRING_CONNECT_FUNC='%s'", StringConfigs[CONFIG_STRING_CONNECT_FUNC].c_str());
-    sLog->outString("CONFIG_STRING_DISCONNECT_FUNC='%s'", StringConfigs[CONFIG_STRING_DISCONNECT_FUNC].c_str());
+    sLog->outDebug("Control=%s", toString(control));
+    sLog->outDebug("Debug=%s", toString(debug));
+    sLog->outDebug();
+    sLog->outDebug("CONFIG_INT_BIND_PORT=%d", IntConfigs[CONFIG_INT_BIND_PORT]);
+    sLog->outDebug("CONFIG_STRING_BIND_IP='%s'", StringConfigs[CONFIG_STRING_BIND_IP].c_str());
+    sLog->outDebug("CONFIG_STRING_PROTOCOL_NAME='%s'", StringConfigs[CONFIG_STRING_PROTOCOL_NAME].c_str());
+    sLog->outDebug("CONFIG_STRING_LIBRARY_PATH='%s'", StringConfigs[CONFIG_STRING_LIBRARY_PATH].c_str());
+    sLog->outDebug("CONFIG_STRING_RECV_FUNC='%s'", StringConfigs[CONFIG_STRING_RECV_FUNC].c_str());
+    sLog->outDebug("CONFIG_STRING_SEND_FUNC='%s'", StringConfigs[CONFIG_STRING_SEND_FUNC].c_str());
+    sLog->outDebug("CONFIG_STRING_CONNECT_FUNC='%s'", StringConfigs[CONFIG_STRING_CONNECT_FUNC].c_str());
+    sLog->outDebug("CONFIG_STRING_DISCONNECT_FUNC='%s'", StringConfigs[CONFIG_STRING_DISCONNECT_FUNC].c_str());
 
-    sLog->outString("CONFIG_STRING_DELAYED_RECV_FUNC='%s'", StringConfigs[CONFIG_STRING_DELAYED_RECV_FUNC].c_str());
-    sLog->outString("CONFIG_INT_DELAYED_RECV_DELAY=%d", IntConfigs[CONFIG_INT_DELAYED_RECV_DELAY]);
-    sLog->outString("CONFIG_STRING_DELAYED_SEND_FUNC='%s'", StringConfigs[CONFIG_STRING_DELAYED_SEND_FUNC].c_str());
-    sLog->outString("CONFIG_INT_DELAYED_SEND_DELAY=%d", IntConfigs[CONFIG_INT_DELAYED_SEND_DELAY]);
-    sLog->outString("CONFIG_STRING_DELAYED_CONNECT_FUNC='%s'", StringConfigs[CONFIG_STRING_DELAYED_CONNECT_FUNC].c_str());
-    sLog->outString("CONFIG_INT_DELAYED_CONNECT_DELAY=%d", IntConfigs[CONFIG_INT_DELAYED_CONNECT_DELAY]);
-    sLog->outString("CONFIG_STRING_DELAYED_DISCONNECT_FUNC='%s'", StringConfigs[CONFIG_STRING_DELAYED_DISCONNECT_FUNC].c_str());
-    sLog->outString("CONFIG_INT_DELAYED_DISCONNECT_DELAY=%d", IntConfigs[CONFIG_INT_DELAYED_DISCONNECT_DELAY]);
+    sLog->outDebug("CONFIG_STRING_DELAYED_RECV_FUNC='%s'", StringConfigs[CONFIG_STRING_DELAYED_RECV_FUNC].c_str());
+    sLog->outDebug("CONFIG_INT_DELAYED_RECV_DELAY=%d", IntConfigs[CONFIG_INT_DELAYED_RECV_DELAY]);
+    sLog->outDebug("CONFIG_STRING_DELAYED_SEND_FUNC='%s'", StringConfigs[CONFIG_STRING_DELAYED_SEND_FUNC].c_str());
+    sLog->outDebug("CONFIG_INT_DELAYED_SEND_DELAY=%d", IntConfigs[CONFIG_INT_DELAYED_SEND_DELAY]);
+    sLog->outDebug("CONFIG_STRING_DELAYED_CONNECT_FUNC='%s'", StringConfigs[CONFIG_STRING_DELAYED_CONNECT_FUNC].c_str());
+    sLog->outDebug("CONFIG_INT_DELAYED_CONNECT_DELAY=%d", IntConfigs[CONFIG_INT_DELAYED_CONNECT_DELAY]);
+    sLog->outDebug("CONFIG_STRING_DELAYED_DISCONNECT_FUNC='%s'", StringConfigs[CONFIG_STRING_DELAYED_DISCONNECT_FUNC].c_str());
+    sLog->outDebug("CONFIG_INT_DELAYED_DISCONNECT_DELAY=%d", IntConfigs[CONFIG_INT_DELAYED_DISCONNECT_DELAY]);
 
-    sLog->outString("CONFIG_STRING_LOAD_FUNC='%s'", StringConfigs[CONFIG_STRING_LOAD_FUNC].c_str());
-    sLog->outString("CONFIG_STRING_UNLOAD_FUNC='%s'", StringConfigs[CONFIG_STRING_UNLOAD_FUNC].c_str());
+    sLog->outDebug("CONFIG_STRING_LOAD_FUNC='%s'", StringConfigs[CONFIG_STRING_LOAD_FUNC].c_str());
+    sLog->outDebug("CONFIG_STRING_UNLOAD_FUNC='%s'", StringConfigs[CONFIG_STRING_UNLOAD_FUNC].c_str());
 }
 
 void Application::outDebugLibrary() const
 {
-    sLog->outString();
-    sLog->outString("Library Name: %s", libLoader->GetLibraryPath());
-    sLog->outString("Is Open: %s", toString(libLoader->is_open()));
-    sLog->outString("Is Loaded: %s", toString(libLoaded));
-    sLog->outString("Recieve Function at Address: 0x%08x", proto.OnRecieve);
-    sLog->outString("Send Function at Address: 0x%08x", proto.OnSend);
-    sLog->outString("Connect Function at Address: 0x%08x", proto.OnConnect);
-    sLog->outString("Disconnect Function at Address: 0x%08x", proto.OnDisconnect);
-    sLog->outString("Load Function at Address: 0x%08x", proto.OnLoad);
-    sLog->outString("Unload Function at Address: 0x%08x", proto.OnUnload);
-    sLog->outString();
+    sLog->outDebug();
+    sLog->outDebug("Library Name: %s", libLoader->GetLibraryPath());
+    sLog->outDebug("Is Open: %s", toString(libLoader->is_open()));
+    sLog->outDebug("Is Loaded: %s", toString(libLoaded));
+    sLog->outDebug("Recieve Function at Address: 0x%08x", proto.OnRecieve);
+    sLog->outDebug("Send Function at Address: 0x%08x", proto.OnSend);
+    sLog->outDebug("Connect Function at Address: 0x%08x", proto.OnConnect);
+    sLog->outDebug("Disconnect Function at Address: 0x%08x", proto.OnDisconnect);
+    sLog->outDebug("Load Function at Address: 0x%08x", proto.OnLoad);
+    sLog->outDebug("Unload Function at Address: 0x%08x", proto.OnUnload);
+    sLog->outDebug();
 }
 
 void Application::LoadIntConfig(string ConfigName, uint32 Config, uint32 Default)
@@ -390,8 +392,7 @@ void Application::_initGlobals()
     socketMgr = new ConnectionMgr();
     threadMgr = new ThreadMgr();
     handler = new PacketHandler();
-    if (BoolConfigs[CONFIG_BOOL_ENABLE_FREEZE_DETECTOR])
-        freezeDetector = new FreezeDetector(IntConfigs[CONFIG_INT_FREEZE_DETECTOR_MAX_DIFF], handler->_diffTime);
+    freezeDetector = new FreezeDetector(IntConfigs[CONFIG_INT_FREEZE_DETECTOR_MAX_DIFF], handler->_diffTime);
 }
 
 void Application::_uninitGlobals()
@@ -401,8 +402,7 @@ void Application::_uninitGlobals()
     delete socketMgr;
     delete threadMgr;
     delete handler;
-    if (freezeDetector)
-        delete freezeDetector;
+    delete freezeDetector;
     delete sLog;
     delete writeMutex;
 }
@@ -416,7 +416,7 @@ void Application::_InitServerSocket()
     setNonblocking(ServerSocket);
     if (ServerSocket < 0)
     {
-        sLog->outError("Socket Creation failed. Error: %d",errno);
+        sLog->outError("Socket Creation failed. Error(%d):  %s", errno, strerror(errno));
         exit(-1);
     }
 
@@ -428,7 +428,7 @@ void Application::_InitServerSocket()
     r = bind(ServerSocket, (struct sockaddr*)&dest, sizeof(dest));
     if (r == -1)
     {
-        sLog->outError("Bind Returned Error: %d", errno);
+        sLog->outError("Bind Returned Error(%d):  %s", errno, strerror(errno));
         close(ServerSocket);
         exit(-1);
     }
@@ -437,7 +437,7 @@ void Application::_InitServerSocket()
     r = listen(ServerSocket, 1024);
     if (r == -1)
     {
-        sLog->outError("Listen Returned Error: %d", errno);
+        sLog->outError("Listen Returned Error(%d):  %s", errno, strerror(errno));
         close(ServerSocket);
         exit(-1);
     }
@@ -466,6 +466,8 @@ void Application::Terminate()
 
 uint32 Application::Update()
 {
+    outDebugParams();
+
     LoadLibrary();
     if (!libLoaded || libLoader->getError())
     {
@@ -473,12 +475,13 @@ uint32 Application::Update()
         return -1;
     }
 
+    outDebugLibrary();
+
     if (proto.OnLoad) // Enable Library to Init its variables
         proto.OnLoad();
 
-    outDebugParams();
-    outDebugLibrary();
     _InitServerSocket();
+
 
     sigHandler->setSignalHandler(Interupt, &HandleInterupt);
     sigHandler->setSignalHandler(SignalType(SIGTERM), &HandleInterupt);
@@ -496,11 +499,11 @@ uint32 Application::Update()
     gettimeofday(&_lastUpdate, 0);
 
     int ProcessQueue = threadMgr->CreateThread("Queue", &CallProcessQueue, handler);
-    if (freezeDetector)
+    if (BoolConfigs[CONFIG_BOOL_ENABLE_FREEZE_DETECTOR])
         freezeDetector->Run();
     if (ProcessQueue == -1)
     {
-        sLog->outError("[Recv Thread] Executing Packet Handling Queue Failed errno: %d",errno);
+        sLog->outError("[Recv Thread] Executing Packet Handling Queue Failed Error(%d): %s", errno, strerror(errno));
         exit(-1);
     }
 
@@ -526,7 +529,7 @@ uint32 Application::Update()
             if (newSocket == -1)
             {
                 if (errno != EAGAIN)
-                    sLog->outError("[Recv Thread] Accept Error: %d", errno);
+                    sLog->outError("[Recv Thread] Accept Error(%d):  %s", errno, strerror(errno));
                 continue;
             }
             setNonblocking(newSocket);
@@ -601,7 +604,7 @@ uint32 Application::Update()
                             case EAGAIN:
                                 break;
                             default:
-                                sLog->outError("[Recv Thread] Recv Error %d  (From %s  fd: %d)", sock->second->errnum(), sock->second->GetAddress(), sock->first);
+                                sLog->outError("[Recv Thread] Recv Error %d (From %s  fd: %d): %s", sock->second->errnum(), sock->second->GetAddress(), sock->first, strerror(sock->second->errnum()));
                         }
                     r--;
                 }
@@ -613,6 +616,7 @@ uint32 Application::Update()
 
     libLoader->close();
     socketMgr->CloseAllSockets();
+    freezeDetector->Exit();
     close(ServerSocket);
     threadMgr->JoinThead(ProcessQueue, NULL);
     sLog->outControl("[Main Process]  Exiting Application");

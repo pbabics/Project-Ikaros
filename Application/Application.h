@@ -104,7 +104,7 @@ class FreezeDetector
         void Run();
         void Exit() { _exit = true; }
         void Pause()  { _pause = true; }
-        void Continue() { _detectorThread->Continue(); }
+        void Continue() { if (_detectorThread) _detectorThread->Continue(); }
 
         int GetStatus() const { if (_detectorThread) return _detectorThread->status; return 0; }
 
